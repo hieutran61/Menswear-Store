@@ -185,7 +185,7 @@ const addItemToCart = asyncHandler(async (req, res, next) => {
 // @route   GET /api/cart
 // @access  Private
 const getAllItemsInCart = asyncHandler(async (req, res) => {
-    const cart = await Cart.findOne({ user: '65ddd09b53382a7dbcd69d17' });
+    const cart = await Cart.findOne({ user: req.user._id });
 
     res.json(cart.cartItems);
 });
