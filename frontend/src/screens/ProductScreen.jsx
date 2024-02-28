@@ -21,6 +21,8 @@ import Loader from '../components/Loader';
 import Message from '../components/Message';
 import Meta from '../components/Meta';
 import { addToCart } from '../slices/cartSlice';
+import { useAddItemToCartMutation } from '../slices/cartsApiSlice';
+
 
 const ProductScreen = () => {
   const { id: productId } = useParams();
@@ -32,9 +34,25 @@ const ProductScreen = () => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
 
-  const addToCartHandler = () => {
-    dispatch(addToCart({ ...product, qty }));
-    navigate('/cart');
+  const [addItemToCart] = useAddItemToCartMutation();
+
+  // const addToCartHandler = () => {
+  //   dispatch(addToCart({ ...product, qty }));
+  //   navigate('/cart');
+  // };
+
+  const addToCartHandler = async () => {
+    try {
+      const res = await addItemToCart({
+        product: product._id,
+        quantity: qty,
+        itemPrice: product.price*qty
+      }).unwrap();
+      dispatch();
+      navigate('/cart');
+    } catch (err) {
+      toast.error(err);
+    }
   };
 
   const {
