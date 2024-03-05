@@ -10,6 +10,13 @@ const orderItem = mongoose.Schema({
     itemPrice: { type: Number, required: true },
 });
 
+const shippingAddressSchema = mongoose.Schema({
+    detailAddress: { type: String, required: true },
+    city: { type: String, required: true },
+    district: { type: String, required: true },
+    ward: { type: String, required: true },
+});
+
 const orderSchema = mongoose.Schema(
     {
         user: {
@@ -18,12 +25,7 @@ const orderSchema = mongoose.Schema(
             ref: 'User',
         },
         orderItems: [orderItem],
-        shippingAddress: {
-            detailAddress: { type: String, required: true },
-            city: { type: String, required: true },
-            district: { type: String, required: true },
-            ward: { type: String, required: true },
-        },
+        shippingAddress: shippingAddressSchema,
         paymentMethod: {
             type: String,
             required: true,
