@@ -48,9 +48,9 @@ const ProductScreen = () => {
         quantity: qty,
         itemPrice: product.price*qty
       }).unwrap();
-      dispatch();
       navigate('/cart');
     } catch (err) {
+      console.log("err");
       toast.error(err);
     }
   };

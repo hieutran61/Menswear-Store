@@ -10,11 +10,19 @@ export const cartApiSlice = apiSlice.injectEndpoints({
                 body: item,
             }),
         }),
-        
+        getCarts: builder.query({
+            query: () => ({
+                url: CARTS_URL,
+                method: 'GET',
+            }),
+
+        }),
+
     }),
 });
 
 export const {
     useAddItemToCartMutation,
-    
+    useGetCartsQuery,
+
 } = cartApiSlice;
