@@ -7,11 +7,11 @@ import FormContainer from '../../components/FormContainer';
 import { toast } from 'react-toastify';
 import {
   useGetProductDetailsQuery,
-  useUpdateProductMutation,
+  useCreateProductMutation,
   useUploadProductImageMutation,
 } from '../../slices/productsApiSlice';
 
-const ProductEditScreen = () => {
+const CreateProductScreen = () => {
   const { id: productId } = useParams();
 
   const [name, setName] = useState('');
@@ -29,8 +29,8 @@ const ProductEditScreen = () => {
     error,
   } = useGetProductDetailsQuery(productId);
 
-  const [updateProduct, { isLoading: loadingUpdate }] =
-    useUpdateProductMutation();
+  const [createProduct, { isLoading: loadingUpdate }] =
+  useCreateProductMutation();
 
   const [uploadProductImage, { isLoading: loadingUpload }] =
     useUploadProductImageMutation();
@@ -40,19 +40,19 @@ const ProductEditScreen = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      await updateProduct({
-        productId,
-        name,
-        price,
-        image,
-        brand,
-        category,
-        description,
-        countInStock,
-      }).unwrap(); // NOTE: here we need to unwrap the Promise to catch any rejection in our catch block
-      toast.success('Product updated');
+        const res = await createProduct({
+        // productId,
+        name: name,
+        price: price,
+        image: image,
+        description: description,
+        countInStock: countInStock,
+      }).unwrap(); 
+      // NOTE: here we need to unwrap the Promise to catch any rejection in our catch block
+      toast.success('Product Created');
       refetch();
       navigate('/admin/productlist');
+      
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -88,13 +88,13 @@ const ProductEditScreen = () => {
         Go Back
       </Link>
       <FormContainer>
-        <h1>Edit Product</h1>
-        {loadingUpdate && <Loader />}
+        <h1>Create Product</h1>
+        {/* {loadingUpdate && <Loader />}
         {isLoading ? (
           <Loader />
         ) : error ? (
           <Message variant='danger'>{error.data.message}</Message>
-        ) : (
+        ) : ( */}
           <Form onSubmit={submitHandler}>
             <Form.Group controlId='name'>
               <Form.Label>Name</Form.Label>
@@ -177,13 +177,13 @@ const ProductEditScreen = () => {
               variant='primary'
               style={{ marginTop: '1rem' }}
             >
-              Update
+              Create
             </Button>
           </Form>
-        )}
+        {/* )} */}
       </FormContainer>
     </>
   );
 };
 
-export default ProductEditScreen;
+export default CreateProductScreen;
