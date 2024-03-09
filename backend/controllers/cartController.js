@@ -159,30 +159,21 @@ const addItemToCart = asyncHandler(async (req, res, next) => {
     try {
         const cart = await Cart.findOne({ user: req.user._id });
 
-        console.log("cart1: ", cart);
-        console.log("item: ", item);
-
         if (!cart.cartItems) {
             cart.cartItems = [];
         }
 
         const existItem = cart.cartItems.find((x) => x.product.toString() === item.product);
-        console.log("existItem: ", existItem);
 
         if (existItem) {
-            console.log("exist Item");
             cart.cartItems = cart.cartItems.map((x) =>
                 x.product === item.product ? item : x
             );
         } else {
-            console.log("NOT exist Item");
-            console.log("Item to push: ", item);
             cart.cartItems.push(item);
-            console.log("cartItems: ", cart.cartItems);
         }
 
         const updatedCart = await cart.save();
-        console.log(updatedCart);
         res.json(updatedCart);
     } catch (error) {
         console.log(error);
@@ -193,9 +184,10 @@ const addItemToCart = asyncHandler(async (req, res, next) => {
 // @desc    Get all items in cart
 // @route   GET /api/cart
 // @access  Private
-const getCart = asyncHandler(async (req, res) => {
-    const cart = await Cart.find({}).populate('user', 'id name');
-    res.json(cart);
+const getAllItemsInCart = asyncHandler(async (req, res) => {
+    const cart = await Cart.findOne({ user: req.user._id });
+
+    res.json(cart.cartItems);
 });
 
 
@@ -206,6 +198,7 @@ export {
     updateOrderToPaid,
     updateOrderToDelivered,
     getOrders,
+
     addItemToCart,
-    getCart,
+    getAllItemsInCart,
 };
