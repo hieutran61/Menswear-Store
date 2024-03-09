@@ -15,7 +15,7 @@ export const cartApiSlice = apiSlice.injectEndpoints({
                 url: CARTS_URL,
                 method: 'GET',
             }),
-
+            keepUnusedDataFor: 1,
         }),
 
     }),
