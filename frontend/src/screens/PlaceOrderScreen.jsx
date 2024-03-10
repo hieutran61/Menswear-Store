@@ -57,6 +57,10 @@ const PlaceOrderScreen = () => {
                 {cart.shippingAddress.postalCode},{' '}
                 {cart.shippingAddress.country}
               </p>
+              <p>
+                <strong>Phone number:</strong>
+                {cart.shippingAddress. phoneNumber}
+              </p>
             </ListGroup.Item>
 
             <ListGroup.Item>
