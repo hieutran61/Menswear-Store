@@ -1,3 +1,4 @@
+import React from 'react';
 import { Navbar, Nav, Container, NavDropdown, Badge } from 'react-bootstrap';
 import { FaShoppingCart, FaUser } from 'react-icons/fa';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -6,8 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import { useLogoutMutation } from '../slices/usersApiSlice';
 import { logout } from '../slices/authSlice';
 import SearchBox from './SearchBox';
-import logo from '../assets/logo.png';
 import { resetCart } from '../slices/cartSlice';
+import logo from '../assets/logo.jpg';
 
 const Header = () => {
   const { cartItems } = useSelector((state) => state.cart);
@@ -22,8 +23,6 @@ const Header = () => {
     try {
       await logoutApiCall().unwrap();
       dispatch(logout());
-      // NOTE: here we need to reset cart state for when a user logs out so the next
-      // user doesn't inherit the previous users cart and shipping
       dispatch(resetCart());
       navigate('/login');
     } catch (err) {
@@ -33,12 +32,21 @@ const Header = () => {
 
   return (
     <header>
-      <Navbar bg='primary' variant='dark' expand='lg' collapseOnSelect>
+      <Navbar
+        style={{ backgroundColor: 'wheat', fontFamily: 'cursive' }}
+        variant='dark'
+        expand='lg'
+        collapseOnSelect
+      >
         <Container>
           <LinkContainer to='/'>
             <Navbar.Brand>
-              <img src={logo} alt='ProShop' />
-              MENWEAR STORE
+              <img  
+                src={logo}
+                alt='Retro Tree Logo'
+                style={{ marginRight: '10px', width: '40px', height: 'auto', borderRadius:'100px' }}
+              />
+              <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#fff' }}>Menwear Store</span>
             </Navbar.Brand>
           </LinkContainer>
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
@@ -46,7 +54,8 @@ const Header = () => {
             <Nav className='ms-auto'>
               <SearchBox />
               <LinkContainer to='/cart'>
-                <Nav.Link>
+                {/* Change color style to black */}
+                <Nav.Link style={{ color: '#000' }}>
                   <FaShoppingCart /> Cart
                   {cartItems.length > 0 && (
                     <Badge pill bg='success' style={{ marginLeft: '5px' }}>
@@ -56,19 +65,15 @@ const Header = () => {
                 </Nav.Link>
               </LinkContainer>
               {userInfo ? (
-                <>
-                  <NavDropdown title={userInfo.name} id='username'>
-                    <LinkContainer to='/profile'>
-                      <NavDropdown.Item>Profile</NavDropdown.Item>
-                    </LinkContainer>
-                    <NavDropdown.Item onClick={logoutHandler}>
-                      Logout
-                    </NavDropdown.Item>
-                  </NavDropdown>
-                </>
+                <NavDropdown title={userInfo.name} id='username'>
+                  <LinkContainer to='/profile'>
+                    <NavDropdown.Item>Profile</NavDropdown.Item>
+                  </LinkContainer>
+                  <NavDropdown.Item onClick={logoutHandler}>Logout</NavDropdown.Item>
+                </NavDropdown>
               ) : (
                 <LinkContainer to='/login'>
-                  <Nav.Link>
+                  <Nav.Link style={{ color: '#000' }}>
                     <FaUser /> Sign In
                   </Nav.Link>
                 </LinkContainer>

@@ -767,10 +767,11 @@ progress {
   --bs-gutter-x: 1.5rem;
   --bs-gutter-y: 0;
   width: 100%;
-  padding-right: calc(var(--bs-gutter-x) * 0.5);
-  padding-left: calc(var(--bs-gutter-x) * 0.5);
-  margin-right: auto;
-  margin-left: auto;
+  padding: 2rem; /* Increase padding for more spacing */
+  margin: 2rem auto; /* Add margin for centering and spacing */
+  background-color: tan; /* Set a soft background color */
+  border-radius: 10px; /* Add a subtle border radius */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
 }
 
 @media (min-width: 576px) {
@@ -813,6 +814,7 @@ progress {
     max-width: 1320px;
   }
 }
+
 .row {
   --bs-gutter-x: 1.5rem;
   --bs-gutter-y: 0;
@@ -4453,23 +4455,19 @@ fieldset:disabled .btn {
   --bs-card-spacer-y: 1.2rem;
   --bs-card-spacer-x: 1.2rem;
   --bs-card-title-spacer-y: 0.6rem;
-  --bs-card-title-color: ;
-  --bs-card-subtitle-color: ;
-  --bs-card-border-width: var(--bs-border-width);
-  --bs-card-border-color: var(--bs-border-color-translucent);
-  --bs-card-border-radius: var(--bs-border-radius);
-  --bs-card-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1),
-    0 2px 4px rgba(255, 20, 20, 0.06);
-  --bs-card-inner-border-radius: calc(
-    var(--bs-border-radius) - (var(--bs-border-width))
-  );
+  --bs-card-title-color: #333; /* Adjust as needed */
+  --bs-card-subtitle-color: #777; /* Adjust as needed */
+  --bs-card-border-width: 0;
+  --bs-card-border-color: transparent;
+  --bs-card-border-radius: 15px; /* Adjust as needed */
+  --bs-card-inner-border-radius: calc(var(--bs-border-radius));
   --bs-card-cap-padding-y: 0.6rem;
   --bs-card-cap-padding-x: 1.2rem;
-  --bs-card-cap-bg: rgba(var(--bs-body-color-rgb), 0.03);
-  --bs-card-cap-color: ;
-  --bs-card-height: ;
-  --bs-card-color: ;
-  --bs-card-bg: var(--bs-body-bg);
+  --bs-card-cap-bg: #f8f9fa; /* Adjust as needed */
+  --bs-card-cap-color: #333; /* Adjust as needed */
+  --bs-card-height: auto; /* Adjust as needed */
+  --bs-card-color: #333; /* Adjust as needed */
+  --bs-card-bg: #fff; /* Adjust as needed */
   --bs-card-img-overlay-padding: 1.2rem;
   --bs-card-group-margin: 0.75rem;
   position: relative;
@@ -4482,29 +4480,14 @@ fieldset:disabled .btn {
   background-clip: border-box;
   border: var(--bs-card-border-width) solid var(--bs-card-border-color);
   border-radius: var(--bs-card-border-radius);
-  box-shadow: var(--bs-card-box-shadow);
+  overflow: hidden; /* Clip overflow content */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Add transition for hover effect */
 }
-.card > hr {
-  margin-right: 0;
-  margin-left: 0;
-}
-.card > .list-group {
-  border-top: inherit;
-  border-bottom: inherit;
-}
-.card > .list-group:first-child {
-  border-top-width: 0;
-  border-top-left-radius: var(--bs-card-inner-border-radius);
-  border-top-right-radius: var(--bs-card-inner-border-radius);
-}
-.card > .list-group:last-child {
-  border-bottom-width: 0;
-  border-bottom-right-radius: var(--bs-card-inner-border-radius);
-  border-bottom-left-radius: var(--bs-card-inner-border-radius);
-}
-.card > .card-header + .list-group,
-.card > .list-group + .card-footer {
-  border-top: 0;
+
+.card:hover {
+  transform: translateY(-5px); /* Lift the card slightly on hover */
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15); /* Increase shadow on hover */
 }
 
 .card-body {
@@ -4516,12 +4499,14 @@ fieldset:disabled .btn {
 .card-title {
   margin-bottom: var(--bs-card-title-spacer-y);
   color: var(--bs-card-title-color);
+  font-size: 1.2rem; /* Adjust font size as needed */
 }
 
 .card-subtitle {
   margin-top: calc(-0.5 * var(--bs-card-title-spacer-y));
   margin-bottom: 0;
   color: var(--bs-card-subtitle-color);
+  font-size: 1rem; /* Adjust font size as needed */
 }
 
 .card-text:last-child {
@@ -4555,22 +4540,6 @@ fieldset:disabled .btn {
     var(--bs-card-inner-border-radius);
 }
 
-.card-header-tabs {
-  margin-right: calc(-0.5 * var(--bs-card-cap-padding-x));
-  margin-bottom: calc(-1 * var(--bs-card-cap-padding-y));
-  margin-left: calc(-0.5 * var(--bs-card-cap-padding-x));
-  border-bottom: 0;
-}
-.card-header-tabs .nav-link.active {
-  background-color: var(--bs-card-bg);
-  border-bottom-color: var(--bs-card-bg);
-}
-
-.card-header-pills {
-  margin-right: calc(-0.5 * var(--bs-card-cap-padding-x));
-  margin-left: calc(-0.5 * var(--bs-card-cap-padding-x));
-}
-
 .card-img-overlay {
   position: absolute;
   top: 0;
@@ -4585,18 +4554,7 @@ fieldset:disabled .btn {
 .card-img-top,
 .card-img-bottom {
   width: 100%;
-}
-
-.card-img,
-.card-img-top {
-  border-top-left-radius: var(--bs-card-inner-border-radius);
-  border-top-right-radius: var(--bs-card-inner-border-radius);
-}
-
-.card-img,
-.card-img-bottom {
-  border-bottom-right-radius: var(--bs-card-inner-border-radius);
-  border-bottom-left-radius: var(--bs-card-inner-border-radius);
+  border-radius: var(--bs-card-inner-border-radius);
 }
 
 .card-group > .card {
@@ -4640,6 +4598,7 @@ fieldset:disabled .btn {
     border-bottom-left-radius: 0;
   }
 }
+
 
 .accordion {
   --bs-accordion-color: var(--bs-body-color);
@@ -8201,6 +8160,8 @@ fieldset:disabled .btn {
 .my-3 {
   margin-top: 1.2rem !important;
   margin-bottom: 1.2rem !important;
+  box-shadow: rgba(85, 81, 81, 0.4) 0px 5px, rgba(85, 81, 81, 0.3) 0px 10px, rgba(85, 81, 81, 0.2) 0px 15px, rgba(85, 81, 81, 0.1) 0px 20px, rgba(85, 81, 81, 0.05) 0px 25px;
+  
 }
 
 .my-4 {
