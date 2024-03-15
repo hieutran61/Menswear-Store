@@ -125,11 +125,18 @@ const OrderScreen = () => {
                 <a href={`mailto:${order.user.email}`}>{order.user.email}</a>
               </p>
               <p>
+              <strong>Phone number:</strong>
+              {order.shippingAddress. phoneNumber}
+              </p>
+              <p>
                 <strong>Address:</strong>
-                {order.shippingAddress.address}, {order.shippingAddress.city}{' '}
-                {order.shippingAddress.postalCode},{' '}
+               
+                {order.shippingAddress.address}, 
+                {order.shippingAddress.city},
+                {order.shippingAddress.postalCode},
                 {order.shippingAddress.country}
               </p>
+              
               {order.isDelivered ? (
                 <Message variant='success'>
                 Delivered on{' '}
@@ -188,7 +195,7 @@ const OrderScreen = () => {
                           </Link>
                         </Col>
                         <Col md={4}>
-                          {item.qty} x ${item.price} = ${item.qty * item.price}
+                          {item.qty} x {item.price}vnđ = {item.qty * item.price}vnđ
                         </Col>
                       </Row>
                     </ListGroup.Item>
@@ -207,25 +214,25 @@ const OrderScreen = () => {
               <ListGroup.Item>
                 <Row>
                   <Col>Items</Col>
-                  <Col>${order.itemsPrice}</Col>
+                  <Col>{order.itemsPrice}vnđ</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Shipping</Col>
-                  <Col>${order.shippingPrice}</Col>
+                  <Col>{order.shippingPrice}vnđ</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Tax</Col>
-                  <Col>${order.taxPrice}</Col>
+                  <Col>{order.taxPrice}vnđ</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Total</Col>
-                  <Col>${order.totalPrice}</Col>
+                  <Col>{order.totalPrice}vnđ</Col>
                 </Row>
               </ListGroup.Item>
               

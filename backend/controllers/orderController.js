@@ -1,4 +1,5 @@
 import asyncHandler from '../middleware/asyncHandler.js';
+import Cart from '../models/cart.js';
 import Order from '../models/order.js';
 import Product from '../models/product.js';
 import { calcPrices } from '../utils/calcPrices.js';
@@ -148,11 +149,58 @@ const getOrders = asyncHandler(async (req, res) => {
   res.json(orders);
 });
 
+// @desc    Create new order
+// @route   POST /api/orders
+// @access  Private
+const createOrder = asyncHandler(async (req, res) => {
+  const cart = await Cart.findOne({ user: req.user._id });
+
+
+    // // calculate prices
+    // const { itemsPrice, taxPrice, shippingPrice, totalPrice } =
+    //   calcPrices(dbOrderItems);
+
+    console.log("cart: ", {...cart});
+
+    const order = new Order({
+      ...cart._doc,
+      orderItems: cart.cartItems,
+      shippingAddress: {
+        detailAddress: "",
+        city: "",
+        district: "",
+        ward: ""
+      },
+      paymentMethod: "",
+      paymentResult: {
+        id: "",
+        status: "",
+        update_time: "",
+        email_address: ""
+      },
+      taxPrice: 0,
+      shippingPrice: 0,
+      isPaid: false,
+      paidAt: null,
+      isDelivered: false,
+      deliveredAt: null
+    });
+
+    // const createdOrder = await order.save();
+
+    console.log(order);
+
+    res.status(201).json(order);
+  
+});
+
 export {
   addOrderItems,
   getMyOrders,
   getOrderById,
   updateOrderToPaid,
   updateOrderToDelivered,
+
   getOrders,
+  createOrder
 };
