@@ -71,12 +71,12 @@ const OrderScreen = () => {
   }
 
   // TESTING ONLY! REMOVE BEFORE PRODUCTION
-  // async function onApproveTest() {
-  //   await payOrder({ orderId, details: { payer: {} } });
-  //   refetch();
+  async function onApproveTest() {
+    await payOrder({ orderId, details: { payer: {} } });
+    refetch();
 
-  //   toast.success('Order is paid');
-  // }
+    toast.success('Order is paid');
+  }
 
   function onError(err) {
     toast.error(err.message);
@@ -101,6 +101,10 @@ const OrderScreen = () => {
     refetch();
   };
 
+  const payOrderHandler = async () => {
+    await payOrder(orderId);
+    refetch();
+  };
   return isLoading ? (
     <Loader />
   ) : error ? (
@@ -121,14 +125,34 @@ const OrderScreen = () => {
                 <a href={`mailto:${order.user.email}`}>{order.user.email}</a>
               </p>
               <p>
+              <strong>Phone number:</strong>
+              {order.shippingAddress. phoneNumber}
+              </p>
+              <p>
                 <strong>Address:</strong>
-                {order.shippingAddress.address}, {order.shippingAddress.city}{' '}
-                {order.shippingAddress.postalCode},{' '}
+               
+                {order.shippingAddress.address}, 
+                {order.shippingAddress.city},
+                {order.shippingAddress.postalCode},
                 {order.shippingAddress.country}
               </p>
+              
               {order.isDelivered ? (
                 <Message variant='success'>
-                  Delivered on {order.deliveredAt}
+                Delivered on{' '}
+                  {order.deliveredAt
+                    ? new Date(
+                        new Date(order.deliveredAt).getTime()
+                      ).toLocaleString('vi-VN', {
+                        year: 'numeric',
+                        month: 'numeric',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        second: 'numeric',
+                        timeZone: 'Asia/Ho_Chi_Minh',
+                      })
+                    : 'Invalid Date Format'}
                 </Message>
               ) : (
                 <Message variant='danger'>Not Delivered</Message>
@@ -171,7 +195,7 @@ const OrderScreen = () => {
                           </Link>
                         </Col>
                         <Col md={4}>
-                          {item.qty} x ${item.price} = ${item.qty * item.price}
+                          {item.qty} x {item.price}vnđ = {item.qty * item.price}vnđ
                         </Col>
                       </Row>
                     </ListGroup.Item>
@@ -190,42 +214,43 @@ const OrderScreen = () => {
               <ListGroup.Item>
                 <Row>
                   <Col>Items</Col>
-                  <Col>${order.itemsPrice}</Col>
+                  <Col>{order.itemsPrice}vnđ</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Shipping</Col>
-                  <Col>${order.shippingPrice}</Col>
+                  <Col>{order.shippingPrice}vnđ</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Tax</Col>
-                  <Col>${order.taxPrice}</Col>
+                  <Col>{order.taxPrice}vnđ</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Total</Col>
-                  <Col>${order.totalPrice}</Col>
+                  <Col>{order.totalPrice}vnđ</Col>
                 </Row>
               </ListGroup.Item>
-              {!order.isPaid && (
+              
+              {/* {!order.isPaid && (
                 <ListGroup.Item>
                   {loadingPay && <Loader />}
 
                   {isPending ? (
                     <Loader />
                   ) : (
-                    <div>
+                    <div> */}
                       {/* THIS BUTTON IS FOR TESTING! REMOVE BEFORE PRODUCTION! */}
                       {/* <Button
                         style={{ marginBottom: '10px' }}
                         onClick={onApproveTest}
                       >
                         Test Pay Order
-                      </Button> */}
+                      </Button>
 
                       <div>
                         <PayPalButtons
@@ -237,24 +262,35 @@ const OrderScreen = () => {
                     </div>
                   )}
                 </ListGroup.Item>
+              )} */}
+
+              {loadingPay && <Loader />}
+
+              {userInfo && userInfo.isAdmin && !order.isPaid && (
+                <ListGroup.Item>
+                  <Button
+                    type='button'
+                    className='btn btn-block'
+                    onClick={payOrderHandler}
+                  >
+                    Mark As Paid
+                  </Button>
+                </ListGroup.Item>
               )}
 
               {loadingDeliver && <Loader />}
 
-              {userInfo &&
-                userInfo.isAdmin &&
-                order.isPaid &&
-                !order.isDelivered && (
-                  <ListGroup.Item>
-                    <Button
-                      type='button'
-                      className='btn btn-block'
-                      onClick={deliverHandler}
-                    >
-                      Mark As Delivered
-                    </Button>
-                  </ListGroup.Item>
-                )}
+              {userInfo && userInfo.isAdmin && !order.isDelivered && (
+                <ListGroup.Item>
+                  <Button
+                    type='button'
+                    className='btn btn-block'
+                    onClick={deliverHandler}
+                  >
+                    Mark As Delivered
+                  </Button>
+                </ListGroup.Item>
+              )}
             </ListGroup>
           </Card>
         </Col>

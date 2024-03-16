@@ -21,16 +21,37 @@ const SearchBox = () => {
   };
 
   return (
-    <Form onSubmit={submitHandler} className='d-flex'>
+    <Form onSubmit={submitHandler} style={{ display: 'flex', alignItems: 'center' }}>
       <Form.Control
         type='text'
         name='q'
         onChange={(e) => setKeyword(e.target.value)}
         value={keyword}
         placeholder='Search Products...'
-        className='mr-sm-2 ml-sm-5'
-      ></Form.Control>
-      <Button type='submit' variant='outline-success' className='p-2 mx-2'>
+        style={{ marginRight: '10px', padding: '8px', border: '2px solid #422800', borderRadius: '30px' }}
+      />
+      <Button
+        type='submit'
+        className="button-74"
+        style={{
+          backgroundColor: '#fbeee0',
+          border: '2px solid #422800',
+          borderRadius: '30px',
+          boxShadow: '#422800 4px 4px 0 0',
+          color: '#422800',
+          cursor: 'pointer',
+          display: 'inline-block',
+          fontWeight: '600',
+          fontSize: '18px',
+          padding: '0 18px',
+          lineHeight: '50px',
+          textAlign: 'center',
+          textDecoration: 'none',
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
+          touchAction: 'manipulation',
+        }}
+      >
         Search
       </Button>
     </Form>
