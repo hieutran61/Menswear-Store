@@ -19,7 +19,7 @@ const CreateProductScreen = () => {
   const [image, setImage] = useState('');
   const [brand, setBrand] = useState('');
   const [category, setCategory] = useState('');
-  const [countInStock, setCountInStock] = useState(0);
+  // const [countInStock, setCountInStock] = useState(0);
   const [description, setDescription] = useState('');
   const [sizeQuantities, setSizeQuantities] = useState([
     { size: 'S', quantity: '' },
@@ -47,6 +47,10 @@ const CreateProductScreen = () => {
   const [uploadProductImage, { isLoading: loadingUpload }] =
     useUploadProductImageMutation();
 
+  const handleBrandChange = (e) => {
+    setBrand(e.target.value);
+  };
+
   const navigate = useNavigate();
 
   const submitHandler = async (e) => {
@@ -58,8 +62,9 @@ const CreateProductScreen = () => {
         price: price,
         image: image,
         description: description,
-        countInStock: countInStock,
-        sizeQuantities: sizeQuantities
+        brand: brand,
+        // countInStock: countInStock,
+        sizeQuantities: sizeQuantities,
       }).unwrap();
       // NOTE: here we need to unwrap the Promise to catch any rejection in our catch block
       toast.success('Product Created');
@@ -76,8 +81,8 @@ const CreateProductScreen = () => {
       setPrice(product.price);
       setImage(product.image);
       setBrand(product.brand);
-      setCategory(product.category);
-      setCountInStock(product.countInStock);
+      // setCategory(product.category);
+      // setCountInStock(product.countInStock);
       setDescription(product.description);
       setSizeQuantities(product.sizeQuantities);
     }
@@ -154,6 +159,19 @@ const CreateProductScreen = () => {
                 onChange={(e) => setBrand(e.target.value)}
               ></Form.Control>
             </Form.Group> */}
+
+          <Form.Group controlId='brand'>
+            <Form.Label>Type</Form.Label>
+            <Form.Control
+              as='select'
+              value={brand}
+              onChange={handleBrandChange}
+            >
+              <option value=''>--Select Type--</option>
+              <option value='Quần'>Quần</option>
+              <option value='Áo'>Áo</option>
+            </Form.Control>
+          </Form.Group>
 
           <div
             className='table-responsive'
