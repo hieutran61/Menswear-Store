@@ -156,24 +156,38 @@ const createOrder = asyncHandler(async (req, res) => {
   console.log("inside createOrder() in orderController");
   const cart = await Cart.findOne({ user: req.user._id });
 
-    // calculate prices
-    const { cartTotal, taxPrice, shippingPrice, totalPrice } =
-      calcPrices(cart.cartItems);
+  // calculate prices
+  const { cartTotal, taxPrice, shippingPrice, totalPrice } =
+    calcPrices(cart.cartItems);
 
-  const order = new Order({
-    user: cart.user,
-    orderItems: cart.cartItems,
-    shippingAddress: req.body.shippingAddress,
-    paymentMethod: null,
-    paymentResult: null,
-    taxPrice: taxPrice,
-    shippingPrice: shippingPrice,
-    totalPrice: totalPrice,
-    isPaid: false,
-    paidAt: null,
-    isDelivered: false,
-    deliveredAt: null
-  });
+  var order = await Order.findOne({ user: req.user._id, isValid: false });
+
+  if (order) {
+    order.orderItems= cart.cartItems,
+    order.shippingAddress= req.body.shippingAddress,
+    order.taxPrice= taxPrice,
+    order.shippingPrice= shippingPrice,
+    order.totalPrice= totalPrice
+  } else {
+    order = new Order({
+      user: cart.user,
+      orderItems: cart.cartItems,
+      shippingAddress: req.body.shippingAddress,
+      paymentMethod: null,
+      paymentResult: null,
+      taxPrice: taxPrice,
+      shippingPrice: shippingPrice,
+      totalPrice: totalPrice,
+      isPaid: false,
+      paidAt: null,
+      isDelivered: false,
+      deliveredAt: null,
+      isValid: false
+    });
+  }
+
+
+  
 
   const createdOrder = await order.save();
 
