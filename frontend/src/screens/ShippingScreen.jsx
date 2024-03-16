@@ -11,46 +11,36 @@ import { useCreateOrderMutation } from '../slices/ordersApiSlice';
 
 const ShippingScreen = () => {
   const cart = useSelector((state) => state.cart);
-  const { shippingAddress } = cart;
 
-  const [address, setAddress] = useState(shippingAddress.address || '');
-  const [city, setCity] = useState(shippingAddress.city || '');
-  const [district, setPostalCode] = useState( shippingAddress.district || '');
-  const [phoneNumber, setPhoneNumber] = useState( shippingAddress. phoneNumber || '');
-  const [ward, setCountry] = useState(shippingAddress.ward || '');
+  const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [district, setPostalCode] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [ward, setCountry] = useState('');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [createOrder, { isLoading, error }] = useCreateOrderMutation();
-
-  const { data: cartItems } = useGetCartsQuery();
+  const [createOrder] = useCreateOrderMutation();
 
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    console.log("phone number: ", phoneNumber);
-    console.log("detail address: ", address);
-    console.log("City: ", city);
-    console.log("District: ", district);
-
-    console.log("Ward: ", ward);
-    
-    
-    // try {
-    //   const res = await createOrder({
-    //     orderItems: cartItems,
-    //     shippingAddress: cart.shippingAddress,
-    //     paymentMethod: cart.paymentMethod,
-    //     itemsPrice: cart.itemsPrice,
-    //     shippingPrice: cart.shippingPrice,
-    //     taxPrice: cart.taxPrice,
-    //     totalPrice: cart.totalPrice,
-    //   }).unwrap();
-    //   navigate('/payment');
-    // } catch (err) {
-    //   toast.error(err);
-    // }
+    try {
+      const res = await createOrder({
+        shippingAddress: {
+          phoneNumber: phoneNumber,
+          detailAddress: address,
+          city: city,
+          district: district,
+          ward: ward
+        },
+      }).unwrap();
+      navigate('/payment');
+    } catch (err) {
+      console.log(err);
+      toast.error(err);
+    }
   };
 
   return (
