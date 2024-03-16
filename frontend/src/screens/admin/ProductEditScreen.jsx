@@ -207,7 +207,7 @@ const ProductEditScreen = () => {
               </Table>
             </div>
 
-            <Form.Group controlId='countInStock'>
+            {/* <Form.Group controlId='countInStock'>
               <Form.Label>Count In Stock</Form.Label>
               <Form.Control
                 type='number'
@@ -215,7 +215,7 @@ const ProductEditScreen = () => {
                 value={countInStock}
                 onChange={(e) => setCountInStock(e.target.value)}
               ></Form.Control>
-            </Form.Group>
+            </Form.Group> */}
 
             {/* <Form.Group controlId='category'>
               <Form.Label>Category</Form.Label>

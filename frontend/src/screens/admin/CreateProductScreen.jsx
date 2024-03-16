@@ -59,6 +59,7 @@ const CreateProductScreen = () => {
         image: image,
         description: description,
         countInStock: countInStock,
+        sizeQuantities: sizeQuantities
       }).unwrap();
       // NOTE: here we need to unwrap the Promise to catch any rejection in our catch block
       toast.success('Product Created');
@@ -78,6 +79,7 @@ const CreateProductScreen = () => {
       setCategory(product.category);
       setCountInStock(product.countInStock);
       setDescription(product.description);
+      setSizeQuantities(product.sizeQuantities);
     }
   }, [product]);
 
@@ -203,7 +205,7 @@ const CreateProductScreen = () => {
             </Table>
           </div>
 
-          <Form.Group controlId='countInStock'>
+          {/* <Form.Group controlId='countInStock'>
             <Form.Label>Count In Stock</Form.Label>
             <Form.Control
               type='number'
@@ -211,7 +213,7 @@ const CreateProductScreen = () => {
               value={countInStock}
               onChange={(e) => setCountInStock(e.target.value)}
             ></Form.Control>
-          </Form.Group>
+          </Form.Group> */}
 
           {/* <Form.Group controlId='category'>
               <Form.Label>Category</Form.Label>
