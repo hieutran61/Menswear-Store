@@ -153,44 +153,31 @@ const getOrders = asyncHandler(async (req, res) => {
 // @route   POST /api/orders
 // @access  Private
 const createOrder = asyncHandler(async (req, res) => {
+  console.log("inside createOrder() in orderController");
   const cart = await Cart.findOne({ user: req.user._id });
 
+    // calculate prices
+    const { cartTotal, taxPrice, shippingPrice, totalPrice } =
+      calcPrices(cart.cartItems);
 
-    // // calculate prices
-    // const { itemsPrice, taxPrice, shippingPrice, totalPrice } =
-    //   calcPrices(dbOrderItems);
+  const order = new Order({
+    user: cart.user,
+    orderItems: cart.cartItems,
+    shippingAddress: req.body.shippingAddress,
+    paymentMethod: null,
+    paymentResult: null,
+    taxPrice: taxPrice,
+    shippingPrice: shippingPrice,
+    totalPrice: totalPrice,
+    isPaid: false,
+    paidAt: null,
+    isDelivered: false,
+    deliveredAt: null
+  });
 
-    console.log("cart: ", {...cart});
+  const createdOrder = await order.save();
 
-    const order = new Order({
-      ...cart._doc,
-      orderItems: cart.cartItems,
-      shippingAddress: {
-        detailAddress: "",
-        city: "",
-        district: "",
-        ward: ""
-      },
-      paymentMethod: "",
-      paymentResult: {
-        id: "",
-        status: "",
-        update_time: "",
-        email_address: ""
-      },
-      taxPrice: 0,
-      shippingPrice: 0,
-      isPaid: false,
-      paidAt: null,
-      isDelivered: false,
-      deliveredAt: null
-    });
-
-    // const createdOrder = await order.save();
-
-    console.log(order);
-
-    res.status(201).json(order);
+  res.status(201).json(createdOrder);
   
 });
 
