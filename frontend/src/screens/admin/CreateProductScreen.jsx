@@ -19,7 +19,6 @@ const CreateProductScreen = () => {
   const [image, setImage] = useState('');
   const [brand, setBrand] = useState('');
   const [category, setCategory] = useState('');
-  // const [countInStock, setCountInStock] = useState(0);
   const [description, setDescription] = useState('');
   const [sizeQuantities, setSizeQuantities] = useState([
     { size: 'S', quantity: '' },
@@ -57,13 +56,11 @@ const CreateProductScreen = () => {
     e.preventDefault();
     try {
       const res = await createProduct({
-        // productId,
         name: name,
         price: price,
         image: image,
         description: description,
         brand: brand,
-        // countInStock: countInStock,
         sizeQuantities: sizeQuantities,
       }).unwrap();
       // NOTE: here we need to unwrap the Promise to catch any rejection in our catch block
@@ -81,8 +78,6 @@ const CreateProductScreen = () => {
       setPrice(product.price);
       setImage(product.image);
       setBrand(product.brand);
-      // setCategory(product.category);
-      // setCountInStock(product.countInStock);
       setDescription(product.description);
       setSizeQuantities(product.sizeQuantities);
     }
@@ -150,16 +145,6 @@ const CreateProductScreen = () => {
             {loadingUpload && <Loader />}
           </Form.Group>
 
-          {/* <Form.Group controlId='brand'>
-              <Form.Label>Brand</Form.Label>
-              <Form.Control
-                type='text'
-                placeholder='Enter brand'
-                value={brand}
-                onChange={(e) => setBrand(e.target.value)}
-              ></Form.Control>
-            </Form.Group> */}
-
           <Form.Group controlId='brand'>
             <Form.Label>Type</Form.Label>
             <Form.Control
@@ -222,26 +207,6 @@ const CreateProductScreen = () => {
               </tbody>
             </Table>
           </div>
-
-          {/* <Form.Group controlId='countInStock'>
-            <Form.Label>Count In Stock</Form.Label>
-            <Form.Control
-              type='number'
-              placeholder='Enter countInStock'
-              value={countInStock}
-              onChange={(e) => setCountInStock(e.target.value)}
-            ></Form.Control>
-          </Form.Group> */}
-
-          {/* <Form.Group controlId='category'>
-              <Form.Label>Category</Form.Label>
-              <Form.Control
-                type='text'
-                placeholder='Enter category'
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              ></Form.Control>
-            </Form.Group> */}
 
           <Form.Group controlId='description'>
             <Form.Label>Description</Form.Label>
