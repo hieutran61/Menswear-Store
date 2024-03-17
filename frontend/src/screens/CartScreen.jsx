@@ -80,6 +80,7 @@ const CartScreen = () => {
                         <Link to={`/product/${item.product._id}`}>{item.product.name}</Link>
                       </Col>
                       <Col md={2}>${item.product.price} VND</Col>
+                      <Col md={2}>Size: {item.product.size}</Col>
                       <Col md={2}>
                         <Form.Control
                           as='select'
@@ -95,7 +96,7 @@ const CartScreen = () => {
                           ))}
                         </Form.Control>
                       </Col>
-                      <Col md={2}>
+                      <Col md={1}>
                         <Button
                           type='button'
                           variant='light'
