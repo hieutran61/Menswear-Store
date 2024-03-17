@@ -154,25 +154,27 @@ const getOrders = asyncHandler(async (req, res) => {
 // @access  Private
 const addItemToCart = asyncHandler(async (req, res, next) => {
   console.log('into addItemToCart() in cartController');
-  const { ...item } = req.body;
+  const { product, quantity } = req.body; // Giả sử `quantity` được gửi trong `req.body`
 
   try {
     const cart = await Cart.findOne({ user: req.user._id });
 
-    if (!cart.cartItems) {
-      cart.cartItems = [];
+    if (!cart) {
+      // Nếu giỏ hàng không tồn tại, bạn có thể tạo mới giỏ hàng ở đây
+      // Hoặc thực hiện các xử lý phù hợp với logic ứng dụng của bạn
     }
 
-    const existItem = cart.cartItems.find(
-      (x) => x.product.toString() === item.product
+    let existItem = cart.cartItems.find(
+      (x) => x.product.toString() === product
     );
 
     if (existItem) {
-      cart.cartItems = cart.cartItems.map((x) =>
-        x.product === item.product ? item : x
-      );
+      // Nếu sản phẩm đã tồn tại trong giỏ hàng, cập nhật `quantity` của sản phẩm
+      existItem.quantity = quantity;
     } else {
-      cart.cartItems.push(item);
+      // Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm mới sản phẩm vào giỏ hàng
+      existItem = { product, quantity };
+      cart.cartItems.push(existItem);
     }
 
     const updatedCart = await cart.save();
