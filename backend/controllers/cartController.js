@@ -154,18 +154,18 @@ const getOrders = asyncHandler(async (req, res) => {
 // @access  Private
 const addItemToCart = asyncHandler(async (req, res, next) => {
   console.log('into addItemToCart() in cartController');
-  const { product, quantity } = req.body; // Giả sử `quantity` được gửi trong `req.body`
-
+  const { product, quantity, size, itemPrice } = req.body;
   try {
-    const cart = await Cart.findOne({ user: req.user._id });
+    let cart = await Cart.findOne({ user: req.user._id });
 
     if (!cart) {
       // Nếu giỏ hàng không tồn tại, bạn có thể tạo mới giỏ hàng ở đây
       // Hoặc thực hiện các xử lý phù hợp với logic ứng dụng của bạn
+      cart = new cart({ user: rep.user._id, cartItems: [] });
     }
 
     let existItem = cart.cartItems.find(
-      (x) => x.product.toString() === product
+      (x) => x && x.product && x.product.toString() === product
     );
 
     if (existItem) {
@@ -173,7 +173,7 @@ const addItemToCart = asyncHandler(async (req, res, next) => {
       existItem.quantity = quantity;
     } else {
       // Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm mới sản phẩm vào giỏ hàng
-      existItem = { product, quantity };
+      existItem = { product, quantity, itemPrice };
       cart.cartItems.push(existItem);
     }
 
@@ -192,6 +192,12 @@ const getAllItemsInCart = asyncHandler(async (req, res) => {
     path: 'cartItems.product',
     model: 'Product',
   });
+  if (cart === null) {
+    // Nếu cart là null, thực hiện các xử lý phù hợp ở đây
+    // Ví dụ: trả về một phản hồi lỗi hoặc thực hiện hành động khác
+    res.status(404).json({ message: 'Cart not found' });
+    return;
+  }
 
   res.json(cart.cartItems);
 });
