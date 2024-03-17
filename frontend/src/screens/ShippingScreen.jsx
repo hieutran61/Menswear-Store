@@ -12,9 +12,8 @@ const ShippingScreen = () => {
 
   const [address, setAddress] = useState(shippingAddress.address || '');
   const [city, setCity] = useState(shippingAddress.city || '');
-  const [postalCode, setPostalCode] = useState(
-    shippingAddress.postalCode || ''
-  );
+  const [postalCode, setPostalCode] = useState( shippingAddress.postalCode || '');
+  const [phoneNumber, setPhoneNumber] = useState( shippingAddress. phoneNumber || '');
   const [country, setCountry] = useState(shippingAddress.country || '');
 
   const dispatch = useDispatch();
@@ -22,7 +21,7 @@ const ShippingScreen = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    dispatch(saveShippingAddress({ address, city, postalCode, country }));
+    dispatch(saveShippingAddress({ phoneNumber, address, city, postalCode, country }));
     navigate('/payment');
   };
 
@@ -31,11 +30,22 @@ const ShippingScreen = () => {
       <CheckoutSteps step1 step2 />
       <h1>Shipping</h1>
       <Form onSubmit={submitHandler}>
-        <Form.Group className='my-2' controlId='address'>
-          <Form.Label>Address</Form.Label>
+      <Form.Group className='my-2' controlId='Phone number'>
+          <Form.Label>Phone number</Form.Label>
           <Form.Control
             type='text'
-            placeholder='Enter address'
+            placeholder='Phone number'
+            value={phoneNumber}
+            required
+            onChange={(e) => setPhoneNumber(e.target.value)}
+          ></Form.Control>
+        </Form.Group>
+
+        <Form.Group className='my-2' controlId='Detail address'>
+          <Form.Label>Detail address</Form.Label>
+          <Form.Control
+            type='text'
+            placeholder='Detail address'
             value={address}
             required
             onChange={(e) => setAddress(e.target.value)}
@@ -53,22 +63,22 @@ const ShippingScreen = () => {
           ></Form.Control>
         </Form.Group>
 
-        <Form.Group className='my-2' controlId='postalCode'>
-          <Form.Label>Postal Code</Form.Label>
+        <Form.Group className='my-2' controlId='District'>
+          <Form.Label>District</Form.Label>
           <Form.Control
             type='text'
-            placeholder='Enter postal code'
+            placeholder='Enter District'
             value={postalCode}
             required
             onChange={(e) => setPostalCode(e.target.value)}
           ></Form.Control>
         </Form.Group>
 
-        <Form.Group className='my-2' controlId='country'>
-          <Form.Label>Country</Form.Label>
+        <Form.Group className='my-2' controlId='Ward'>
+          <Form.Label>Ward</Form.Label>
           <Form.Control
             type='text'
-            placeholder='Enter country'
+            placeholder='Enter Ward'
             value={country}
             required
             onChange={(e) => setCountry(e.target.value)}

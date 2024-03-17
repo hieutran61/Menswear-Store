@@ -23,7 +23,6 @@ import Meta from '../components/Meta';
 import { addToCart } from '../slices/cartSlice';
 import { useAddItemToCartMutation } from '../slices/cartsApiSlice';
 
-
 const ProductScreen = () => {
   const { id: productId } = useParams();
 
@@ -32,6 +31,7 @@ const ProductScreen = () => {
 
   const [qty, setQty] = useState(1);
   const [rating, setRating] = useState(0);
+  const [size, setSize] = useState('');
   const [comment, setComment] = useState('');
 
   const [addItemToCart] = useAddItemToCartMutation();
@@ -46,11 +46,12 @@ const ProductScreen = () => {
       const res = await addItemToCart({
         product: product._id,
         quantity: qty,
-        itemPrice: product.price*qty
+        size: product.size,
+        itemPrice: product.price * qty,
       }).unwrap();
-      dispatch();
       navigate('/cart');
     } catch (err) {
+      console.log("err");
       toast.error(err);
     }
   };
@@ -66,6 +67,10 @@ const ProductScreen = () => {
 
   const [createReview, { isLoading: loadingProductReview }] =
     useCreateReviewMutation();
+
+  const handleSizeChange = (e) => {
+    setSize(e.target.value);
+  };
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -134,6 +139,27 @@ const ProductScreen = () => {
                       <Col>Status:</Col>
                       <Col>
                         {product.countInStock > 0 ? 'In Stock' : 'Out Of Stock'}
+                      </Col>
+                    </Row>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>Size:</Col>
+                      <Col>
+                        <Form.Control
+                          as='select'
+                          value={size}
+                          onChange={handleSizeChange}
+                          style={{
+                            borderRadius: '5px',
+                            border: '1px solid #b5c0c1',
+                            color: 'var(--bs-body-color)',
+                          }}
+                        >
+                          <option value='s'>S</option>
+                          <option value='m'>M</option>
+                          <option value='l'>L</option>
+                        </Form.Control>
                       </Col>
                     </Row>
                   </ListGroup.Item>

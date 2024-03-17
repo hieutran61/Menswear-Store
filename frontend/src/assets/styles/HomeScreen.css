@@ -1,0 +1,35 @@
+/* Thêm CSS này vào tệp HomeScreen.css của bạn */
+.home-screen {
+ 
+    background-size: cover;
+    background-position: center;
+    padding: 20px;
+    min-height: calc(100vh - 56px); /* Điều chỉnh dựa trên chiều cao của thanh điều hướng của bạn */
+  }
+  
+  .title {
+    color: #fff;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .brand-text {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    /* Add more styles as needed */
+  }
+  
+  .banner-text {
+    display: flex;
+    align-items: center;
+    color: #000;
+    font-family: cursive;
+    font-size: 18px;
+    line-height: 1.5;
+    text-align: justify;
+    position: relative;
+    
+    
+  }
+  
+  
+  
+  

@@ -2,26 +2,51 @@ main {
   min-height: 80vh;
 }
 
+.rating {
+  display: inline-flex;
+  align-items: center;
+}
+
 .rating span {
-  margin: 0.1rem;
+  margin: 0;
 }
 
 .rating svg {
-  color: #f8e825;
+  width: 1.2rem;
+  height: 1.2rem;
+  fill: #f8e825;
+  stroke: #f8e825;
+  stroke-width: 0.1rem;
+  margin-right: 0.2rem;
 }
 
 .rating-text {
-  font-size: 0.8rem;
+  font-size: 1rem;
   font-weight: 600;
-  padding-left: 0.5rem;
+  color: #333;
 }
 
+
 .product-title {
-  height: 2.5em; /* Set a fixed height */
-  overflow: hidden; /* Hide overflow content */
-  text-overflow: ellipsis; /* Add ellipsis for long text */
-  white-space: nowrap; /* Prevent wrapping */
+  height: auto; /* Điều chỉnh chiều cao tùy ý */
+  overflow: hidden; /* Ẩn nội dung tràn */
+  text-overflow: ellipsis; /* Thêm dấu ba chấm cho văn bản dài */
+  white-space: nowrap; /* Ngăn việc bọc dòng */
+  font-size: 1.4em; /* Điều chỉnh kích thước font cỡ */
+  font-weight: 300; /* Làm cho chữ mỏng hơn */
+  color: #555; /* Điều chỉnh màu sắc cần thiết */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Thêm bóng cho văn bản */
+  transition: color 0.3s ease, text-shadow 0.3s ease; /* Hiệu ứng mượt mà khi di chuột qua */
+  text-decoration: none; /* Loại bỏ gạch chân */
+  font-family:monospace;/* Điều chỉnh kiểu font chữ */
 }
+
+.product-title:hover {
+  color: #6260e0; /* Thay đổi màu khi di chuột qua */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15); /* Tăng độ đậm của bóng khi di chuột qua */
+}
+
+
 
 table td,
 table th {
