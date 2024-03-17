@@ -19,17 +19,20 @@ const ProductEditScreen = () => {
   const [image, setImage] = useState('');
   const [brand, setBrand] = useState('');
   const [description, setDescription] = useState('');
-  const [sizeQuantities, setSizeQuantities] = useState([
-    { size: 'S', quantity: '' },
-    { size: 'M', quantity: '' },
-    { size: 'L', quantity: '' },
+  const [size, setSize] = useState([
+    { sizeName: 'S', countInStock: '' },
+    { sizeName: 'M', countInStock: '' },
+    { sizeName: 'L', countInStock: '' },
   ]); // Mảng lưu trữ thông tin về size và số lượng
 
   const handleSizeQuantityChange = (index, field, value) => {
     // Cập nhật thông tin về size và số lượng trong mảng
-    const updatedSizeQuantities = [...sizeQuantities];
-    updatedSizeQuantities[index][field] = value;
-    setSizeQuantities(updatedSizeQuantities);
+    const updatedSize = [...size];
+    updatedSize[index] = {
+      ...updatedSize[index],
+      [field]: value,
+    };
+    setSize(updatedSize);
   };
 
   const {
@@ -61,7 +64,7 @@ const ProductEditScreen = () => {
         image,
         brand,
         description,
-        sizeQuantities,
+        size,
       }).unwrap(); // NOTE: here we need to unwrap the Promise to catch any rejection in our catch block
       toast.success('Product updated');
       refetch();
@@ -78,7 +81,7 @@ const ProductEditScreen = () => {
       setImage(product.image);
       setBrand(product.brand);
       setDescription(product.description);
-      // setSizeQuantities(product.sizeQuantities);
+      setSize(product.size);
     }
   }, [product]);
 
@@ -178,23 +181,23 @@ const ProductEditScreen = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {sizeQuantities.map((sizeQuantity, index) => (
+                  {size.map((sizeQuantity, index) => (
                     <tr key={index}>
                       <td>
-                        <Form.Group controlId={`size-${index}`}>
-                          <Form.Label>{sizeQuantity.size}</Form.Label>
+                        <Form.Group controlId={`sizeName-${index}`}>
+                          <Form.Label>{sizeQuantity.sizeName}</Form.Label>
                         </Form.Group>
                       </td>
                       <td>
-                        <Form.Group controlId={`quantity-${index}`}>
+                        <Form.Group controlId={`countInStock-${index}`}>
                           <Form.Control
                             type='number'
                             placeholder='Enter quantity'
-                            value={sizeQuantity.quantity}
+                            value={sizeQuantity.countInStock}
                             onChange={(e) =>
                               handleSizeQuantityChange(
                                 index,
-                                'quantity',
+                                'countInStock',
                                 e.target.value
                               )
                             }
