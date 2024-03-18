@@ -13,8 +13,8 @@ import { FaTrash } from 'react-icons/fa';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import { addToCart, removeFromCart } from '../slices/cartSlice';
-import { useGetCartsQuery, useRemoveCartItemMutation } from '../slices/cartsApiSlice';
-
+import { useGetCartsQuery, useDeleteCartItemMutation } from '../slices/cartsApiSlice';
+import { toast } from 'react-toastify';
 
 const CartScreen = () => {
   const navigate = useNavigate();
@@ -27,11 +27,12 @@ const CartScreen = () => {
     data: cartItems,
     isLoading,
     error,
+    refetch,
   } = useGetCartsQuery();
   console.log("isLoading: ", isLoading);
   console.log("cartItems: ", cartItems);
 
-  const [removeCartItem, { isLoading: removeCartItemLoading }] = useRemoveCartItemMutation();
+  const [deleteItem] = useDeleteCartItemMutation();
 
   // NOTE: no need for an async function here as we are not awaiting the
   // resolution of a Promise
@@ -39,11 +40,16 @@ const CartScreen = () => {
     dispatch(addToCart({ ...product, qty }));
   };
 
-  const removeFromCartHandler = (id) => {
-    console.log('Removing product with ID:', id); 
-    removeCartItem(id); // Sử dụng hook removeCartItemMutation với id của sản phẩm
+  const deleteItemHandler = async (id) => {
+    if (window.confirm('Are you sure')) {
+      try {
+        await deleteItem(id);
+        refetch();
+      } catch (err) {
+        toast.error(err?.data?.message || err.error);
+      }
+    }
   };
-
   const checkoutHandler = () => {
     navigate('/login?redirect=/shipping');
   };
@@ -80,12 +86,13 @@ const CartScreen = () => {
                         <Link to={`/product/${item.product._id}`}>{item.product.name}</Link>
                       </Col>
                       <Col md={2}>${item.product.price} VND</Col>
+                      <Col md={2}>Size: {item.product.size}</Col>
                       <Col md={2}>
                         <Form.Control
                           as='select'
-                          value={item.product.quantity}
+                          value={item.quantity}
                           onChange={(e) =>
-                            addToCartHandler(item.product, Number(e.target.value))
+                            addToCartHandler(item, Number(e.target.value))
                           }
                         >
                           {[...Array(item.product.countInStock).keys()].map((x) => (
@@ -95,11 +102,11 @@ const CartScreen = () => {
                           ))}
                         </Form.Control>
                       </Col>
-                      <Col md={2}>
+                      <Col md={1}>
                         <Button
                           type='button'
                           variant='light'
-                          onClick={() => removeFromCartHandler(item._id)}
+                          onClick={() => deleteItemHandler(item.product._id)}
                         >
                           <FaTrash />
                         </Button>
