@@ -50,11 +50,12 @@ const productSchema = mongoose.Schema(
       required: true,
       default: 0,
     },
-    countInStock: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
+    size: [
+      {
+        sizeName: { type: String, required: true },
+        countInStock: { type: Number, required: true, default: 0 },
+      },
+    ],
   },
   {
     timestamps: true,
