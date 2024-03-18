@@ -8,6 +8,7 @@ const orderItem = mongoose.Schema({
   },
   quantity: { type: Number, required: true },
   itemPrice: { type: Number, required: true },
+  size: {type: String, required: true}
 });
 
 const shippingAddressSchema = mongoose.Schema({
