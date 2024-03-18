@@ -17,7 +17,7 @@ export const cartApiSlice = apiSlice.injectEndpoints({
       }),
       keepUnusedDataFor: 1,
     }),
-    removeCartItem: builder.mutation({
+    deleteCartItem: builder.mutation({
       query: (itemId) => ({
         url: `${CARTS_URL}/${itemId}`,
         method: 'DELETE',
@@ -29,5 +29,5 @@ export const cartApiSlice = apiSlice.injectEndpoints({
 export const {
   useAddItemToCartMutation,
   useGetCartsQuery,
-  useRemoveCartItemMutation,
+  useDeleteCartItemMutation,
 } = cartApiSlice;

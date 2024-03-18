@@ -202,6 +202,45 @@ const getAllItemsInCart = asyncHandler(async (req, res) => {
   res.json(cart.cartItems);
 });
 
+// @desc    Remove item from cart
+// @route   DELETE /api/carts/:id
+// @access  Private
+const deleteItem = asyncHandler(async (req, res) => {
+  const itemId = req.params.id;
+
+  const userId = req.user._id;
+
+  // Find the cart of the user
+  const cart = await Cart.findOne({ user: userId });
+
+  if (!cart) {
+    res.status(404);
+    throw new Error('Cart not found');
+  }
+ 
+  console.log({ cartItems: cart.cartItems });
+  console.log({ itemId });
+
+
+  // Filter out the item to be deleted
+  const updatedCartItems = (cart.cartItems || []).filter(item => item.product.toString() !== itemId);
+
+  // Update the cart with the filtered items
+  const updatedCart = await Cart.findOneAndUpdate(
+    { user: userId },
+    { cartItems: updatedCartItems },
+    { new: true } // To get the updated document
+  );
+
+  if (!updatedCart) {
+    res.status(404);
+    throw new Error('Cart not updated');
+  }
+
+  res.json({ message: 'Item removed' });
+});
+
+
 export {
   addOrderItems,
   getMyOrders,
@@ -211,4 +250,5 @@ export {
   getOrders,
   addItemToCart,
   getAllItemsInCart,
+  deleteItem,
 };
