@@ -173,7 +173,7 @@ const addItemToCart = asyncHandler(async (req, res, next) => {
       existItem.quantity = quantity;
     } else {
       // Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm mới sản phẩm vào giỏ hàng
-      existItem = { product, quantity, itemPrice };
+      existItem = { product, quantity, itemPrice, size };
       cart.cartItems.push(existItem);
     }
 
