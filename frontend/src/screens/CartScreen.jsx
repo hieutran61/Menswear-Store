@@ -14,6 +14,7 @@ import Message from '../components/Message';
 import Loader from '../components/Loader';
 import { addToCart, removeFromCart } from '../slices/cartSlice';
 import { useGetCartsQuery, useDeleteCartItemMutation } from '../slices/cartsApiSlice';
+import { useAddItemToCartMutation } from '../slices/cartsApiSlice';
 import { toast } from 'react-toastify';
 
 const CartScreen = () => {
@@ -33,11 +34,23 @@ const CartScreen = () => {
   console.log("cartItems: ", cartItems);
 
   const [deleteItem] = useDeleteCartItemMutation();
+  const [addItemToCart] = useAddItemToCartMutation();
 
   // NOTE: no need for an async function here as we are not awaiting the
   // resolution of a Promise
-  const addToCartHandler = (product, qty) => {
-    dispatch(addToCart({ ...product, qty }));
+  const addToCartHandler = async (proId, qty, size, itemPrice) => {
+    try {
+      const res = await addItemToCart({
+        product: proId,
+        quantity: qty,
+        size: size,
+        itemPrice: itemPrice,
+      });
+      refetch();
+    } catch (err) {
+      console.log("err in addToCartHandler");
+      toast.error(err);
+    }
   };
 
   const deleteItemHandler = async (id) => {
@@ -87,21 +100,22 @@ const CartScreen = () => {
                       </Col>
                       <Col md={2}>${item.product.price} VND</Col>
                       <Col md={2}>Size: {item.size2}</Col>
-                      {/* <Col md={2}>
+                      <Col md={2}>
                         <Form.Control
                           as='select'
                           value={item.quantity}
                           onChange={(e) =>
-                            addToCartHandler(item, Number(e.target.value))
+                            addToCartHandler(item.product._id, Number(e.target.value), item.size2, item.product.price*Number(e.target.value))
                           }
                         >
-                          {[...Array(item.product.countInStock).keys()].map((x) => (
-                            <option key={x + 1} value={x + 1}>
-                              {x + 1}
-                            </option>
+                          {[...Array(item.product.size.find((sizeOption) => sizeOption.sizeName === item.size2).countInStock
+                              ).keys()].map((x) => (
+                                <option key={x + 1} value={x + 1}>
+                                  {x + 1}
+                                </option>
                           ))}
                         </Form.Control>
-                      </Col> */}
+                      </Col>
                       <Col md={1}>
                         <Button
                           type='button'
