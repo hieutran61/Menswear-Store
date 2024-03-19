@@ -21,9 +21,9 @@ const CreateProductScreen = () => {
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
   const [sizeQuantities, setSizeQuantities] = useState([
-    { size: 'S', quantity: '' },
-    { size: 'M', quantity: '' },
-    { size: 'L', quantity: '' },
+    { sizeName: 'S', countInStock: '' },
+    { sizeName: 'M', countInStock: '' },
+    { sizeName: 'L', countInStock: '' },
   ]); // Mảng lưu trữ thông tin về size và số lượng
 
   const handleSizeQuantityChange = (index, field, value) => {
@@ -61,7 +61,7 @@ const CreateProductScreen = () => {
         image: image,
         description: description,
         brand: brand,
-        sizeQuantities: sizeQuantities,
+        size: sizeQuantities,
       }).unwrap();
       // NOTE: here we need to unwrap the Promise to catch any rejection in our catch block
       toast.success('Product Created');
@@ -187,15 +187,15 @@ const CreateProductScreen = () => {
                       </Form.Group>
                     </td>
                     <td>
-                      <Form.Group controlId={`quantity-${index}`}>
+                      <Form.Group controlId={`countInStock-${index}`}>
                         <Form.Control
                           type='number'
                           placeholder='Enter quantity'
-                          value={sizeQuantity.quantity}
+                          value={sizeQuantity.countInStock}
                           onChange={(e) =>
                             handleSizeQuantityChange(
                               index,
-                              'quantity',
+                              'countInStock',
                               e.target.value
                             )
                           }
