@@ -31,15 +31,10 @@ const ProductScreen = () => {
 
   const [qty, setQty] = useState(1);
   const [rating, setRating] = useState(0);
-  const [size, setSize] = useState('');
+  const [size, setSize] = useState('S');
   const [comment, setComment] = useState('');
 
   const [addItemToCart] = useAddItemToCartMutation();
-
-  // const addToCartHandler = () => {
-  //   dispatch(addToCart({ ...product, qty }));
-  //   navigate('/cart');
-  // };
 
   const addToCartHandler = async () => {
     try {
@@ -138,7 +133,7 @@ const ProductScreen = () => {
                     <Row>
                       <Col>Status:</Col>
                       <Col>
-                      {size && product.size.find((sizeOption) => sizeOption.sizeName === size)?.countInStock > 0
+                      {product.size.find((sizeOption) => sizeOption.sizeName === size)?.countInStock > 0
                       ? 'In Stock'
                       : 'Out Of Stock'}
                       </Col>
@@ -197,7 +192,7 @@ const ProductScreen = () => {
                     <Button
                       className='btn-block'
                       type='button'
-                      disabled={product.countInStock === 0}
+                      disabled={product.size.find((sizeOption) => sizeOption.sizeName === size)?.countInStock === 0}
                       onClick={addToCartHandler}
                     >
                       Add To Cart
