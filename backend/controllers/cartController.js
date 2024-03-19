@@ -154,25 +154,28 @@ const getOrders = asyncHandler(async (req, res) => {
 // @access  Private
 const addItemToCart = asyncHandler(async (req, res, next) => {
   console.log('into addItemToCart() in cartController');
-  const { ...item } = req.body;
-
+  const { product, quantity, size, itemPrice } = req.body;
   try {
-    const cart = await Cart.findOne({ user: req.user._id });
+    let cart = await Cart.findOne({ user: req.user._id });
 
-    if (!cart.cartItems) {
-      cart.cartItems = [];
+    if (!cart) {
+      // Nếu giỏ hàng không tồn tại, bạn có thể tạo mới giỏ hàng ở đây
+      // Hoặc thực hiện các xử lý phù hợp với logic ứng dụng của bạn
+      cart = new cart({ user: rep.user._id, cartItems: [] });
     }
 
-    const existItem = cart.cartItems.find(
-      (x) => x.product.toString() === item.product
+    let existItem = cart.cartItems.find(
+      (x) => x && x.product && x.product.toString() === product
     );
 
     if (existItem) {
-      cart.cartItems = cart.cartItems.map((x) =>
-        x.product === item.product ? item : x
-      );
+      // Nếu sản phẩm đã tồn tại trong giỏ hàng, cập nhật `quantity` của sản phẩm
+      existItem.quantity = quantity;
+      existItem.size2 = size;
     } else {
-      cart.cartItems.push(item);
+      // Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm mới sản phẩm vào giỏ hàng
+      existItem = { product, quantity, itemPrice, size2: size };
+      cart.cartItems.push(existItem);
     }
 
     const updatedCart = await cart.save();
@@ -190,9 +193,65 @@ const getAllItemsInCart = asyncHandler(async (req, res) => {
     path: 'cartItems.product',
     model: 'Product',
   });
+  if (cart === null) {
+    // Nếu cart là null, thực hiện các xử lý phù hợp ở đây
+    // Ví dụ: trả về một phản hồi lỗi hoặc thực hiện hành động khác
+    res.status(404).json({ message: 'Cart not found' });
+    return;
+  }
 
-  res.json(cart.cartItems);
+  const itemsWithoutSize = cart.cartItems.map(item => {
+    const { product, quantity, itemPrice, size2 } = item;
+    const { _id, name, image, price, size } = product;
+    return {
+      product: { _id, name, image, price, size },
+      quantity,
+      itemPrice, 
+      size2
+    };
+  });
+
+  res.json(itemsWithoutSize);
 });
+
+// @desc    Remove item from cart
+// @route   DELETE /api/carts/:id
+// @access  Private
+const deleteItem = asyncHandler(async (req, res) => {
+  const itemId = req.params.id;
+
+  const userId = req.user._id;
+
+  // Find the cart of the user
+  const cart = await Cart.findOne({ user: userId });
+
+  if (!cart) {
+    res.status(404);
+    throw new Error('Cart not found');
+  }
+ 
+  console.log({ cartItems: cart.cartItems });
+  console.log({ itemId });
+
+
+  // Filter out the item to be deleted
+  const updatedCartItems = (cart.cartItems || []).filter(item => item.product.toString() !== itemId);
+
+  // Update the cart with the filtered items
+  const updatedCart = await Cart.findOneAndUpdate(
+    { user: userId },
+    { cartItems: updatedCartItems },
+    { new: true } // To get the updated document
+  );
+
+  if (!updatedCart) {
+    res.status(404);
+    throw new Error('Cart not updated');
+  }
+
+  res.json({ message: 'Item removed' });
+});
+
 
 export {
   addOrderItems,
@@ -203,4 +262,5 @@ export {
   getOrders,
   addItemToCart,
   getAllItemsInCart,
+  deleteItem,
 };

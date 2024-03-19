@@ -23,7 +23,6 @@ import Meta from '../components/Meta';
 import { addToCart } from '../slices/cartSlice';
 import { useAddItemToCartMutation } from '../slices/cartsApiSlice';
 
-
 const ProductScreen = () => {
   const { id: productId } = useParams();
 
@@ -32,21 +31,18 @@ const ProductScreen = () => {
 
   const [qty, setQty] = useState(1);
   const [rating, setRating] = useState(0);
+  const [size, setSize] = useState('S');
   const [comment, setComment] = useState('');
 
   const [addItemToCart] = useAddItemToCartMutation();
-
-  // const addToCartHandler = () => {
-  //   dispatch(addToCart({ ...product, qty }));
-  //   navigate('/cart');
-  // };
 
   const addToCartHandler = async () => {
     try {
       const res = await addItemToCart({
         product: product._id,
         quantity: qty,
-        itemPrice: product.price*qty
+        size: size,
+        itemPrice: product.price * qty,
       }).unwrap();
       navigate('/cart');
     } catch (err) {
@@ -66,6 +62,10 @@ const ProductScreen = () => {
 
   const [createReview, { isLoading: loadingProductReview }] =
     useCreateReviewMutation();
+
+  const handleSizeChange = (e) => {
+    setSize(e.target.value);
+  };
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -133,13 +133,39 @@ const ProductScreen = () => {
                     <Row>
                       <Col>Status:</Col>
                       <Col>
-                        {product.countInStock > 0 ? 'In Stock' : 'Out Of Stock'}
+                      {product.size.find((sizeOption) => sizeOption.sizeName === size)?.countInStock > 0
+                      ? 'In Stock'
+                      : 'Out Of Stock'}
+                      </Col>
+                    </Row>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>Size:</Col>
+                      <Col>
+                        <Form.Control
+                          as='select'
+                          value={size}
+                          onChange={handleSizeChange}
+                          style={{
+                            borderRadius: '5px',
+                            border: '1px solid #b5c0c1',
+                            color: 'var(--bs-body-color)',
+                          }}
+                        >
+                          {/* Lặp qua mảng size để hiển thị danh sách kích thước */}
+                          {product.size.map((sizeOption) => (
+                            <option key={sizeOption.sizeName} value={sizeOption.sizeName}>
+                              {sizeOption.sizeName}
+                            </option>
+                          ))}
+                        </Form.Control>
                       </Col>
                     </Row>
                   </ListGroup.Item>
 
                   {/* Qty Select */}
-                  {product.countInStock > 0 && (
+                  {size && product.size.find((sizeOption) => sizeOption.sizeName === size)?.countInStock > 0 && (
                     <ListGroup.Item>
                       <Row>
                         <Col>Qty</Col>
@@ -149,8 +175,8 @@ const ProductScreen = () => {
                             value={qty}
                             onChange={(e) => setQty(Number(e.target.value))}
                           >
-                            {[...Array(product.countInStock).keys()].map(
-                              (x) => (
+                            {[...Array(product.size.find((sizeOption) => sizeOption.sizeName === size).countInStock
+                              ).keys()].map((x) => (
                                 <option key={x + 1} value={x + 1}>
                                   {x + 1}
                                 </option>
@@ -166,7 +192,7 @@ const ProductScreen = () => {
                     <Button
                       className='btn-block'
                       type='button'
-                      disabled={product.countInStock === 0}
+                      disabled={product.size.find((sizeOption) => sizeOption.sizeName === size)?.countInStock === 0}
                       onClick={addToCartHandler}
                     >
                       Add To Cart
