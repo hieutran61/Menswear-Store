@@ -63,7 +63,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
 // @route   GET /api/orders/myorders
 // @access  Private
 const getMyOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({ user: req.user._id });
+  const orders = await Order.find({ user: req.user._id, isValid: true });
   res.json(orders);
 });
 
@@ -195,6 +195,37 @@ const createOrder = asyncHandler(async (req, res) => {
   
 });
 
+// @desc    Update payment method of order
+// @route   PUT /api/orders
+// @access  Private
+const updatePaymentMethod = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id);
+  const { paymentMethod } = req.body;
+  console.log("paymentMethod", paymentMethod);
+
+  if (order) {
+    order.paymentMethod = paymentMethod;
+    order.paymentResult = "Not paid";
+    order.isPaid = false;
+
+    console.log(order);
+    // const updatedOrder = await order.save();
+
+    // res.json(updatedOrder);
+  } else {
+    res.status(404);
+    throw new Error('Order not found');
+  }
+});
+
+// @desc    Get logged in user orders
+// @route   GET /api/orders/myorders
+// @access  Private
+const getMyOrderNotValid = asyncHandler(async (req, res) => {
+  const orders = await Order.find({ user: req.user._id, isValid: false });
+  res.json(orders[0]);
+});
+
 export {
   addOrderItems,
   getMyOrders,
@@ -203,5 +234,7 @@ export {
   updateOrderToDelivered,
 
   getOrders,
-  createOrder
+  createOrder,
+  updatePaymentMethod,
+  getMyOrderNotValid
 };
