@@ -2,21 +2,42 @@ import { useState, useEffect } from 'react';
 import { Form, Button, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import FormContainer from '../components/FormContainer';
 import CheckoutSteps from '../components/CheckoutSteps';
 import { savePaymentMethod } from '../slices/cartSlice';
+import { useUpdatePaymentMethodMutation, useGetMyOrdersNotValidQuery } from '../slices/ordersApiSlice';
+
 
 const PaymentScreen = () => {
   const navigate = useNavigate();
   
   const [paymentMethod, setPaymentMethod] = useState('PayPal');
+  const [updatePaymentMethod] = useUpdatePaymentMethodMutation();
+  
+
+  const {
+    data: order,
+    refetch,
+    isLoading,
+    error,
+  } = useGetMyOrdersNotValidQuery();
+
+
 
   const dispatch = useDispatch();
 
-  const submitHandler = (e) => {
+  console.log("Order: ", order);
+
+  const submitHandler = async (e) => {
     e.preventDefault();
-    dispatch(savePaymentMethod(paymentMethod));
-    navigate('/placeorder');
+    try {
+      const res = await updatePaymentMethod(order._id, paymentMethod).unwrap();
+      navigate('/placeorder');
+    } catch (err) {
+      console.log(err);
+      toast.error(err);
+    }
   };
 
   return (
