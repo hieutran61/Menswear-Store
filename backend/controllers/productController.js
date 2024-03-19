@@ -47,29 +47,30 @@ const getProductById = asyncHandler(async (req, res) => {
 // @route   POST /api/products
 // @access  Private/Admin
 const createProduct = asyncHandler(async (req, res) => {
-  const { name, image, description, price, countInStock } = req.body;
+  const { name, image, description, price, size, brand } = req.body;
 
   const product = new Product({
-    name: name,
-    price: price,
-    image: image,
+    name: name || 'Sample Product',
+    price: price || 0,
+    image: image || '/images/sample.jpg',
+    brand: brand,
     reviews: [],
     rating: 0,
     numReviews: 0,
-    countInStock: 0,
-    description: description,
+    description: description || 'Sample Description',
+    size: size 
   });
 
   console.log("product: ", product);
-  // const createdProduct = await product.save();
-  res.status(201).json(product);
+  const createdProduct = await product.save();
+  res.status(201).json(createdProduct);
 });
 
 // @desc    Update a product
 // @route   PUT /api/products/:id
 // @access  Private/Admin
 const updateProduct = asyncHandler(async (req, res) => {
-  const { name, price, description, image, brand, category, countInStock } =
+  const { name, price, description, image, brand, size } =
     req.body;
 
   const product = await Product.findById(req.params.id);
@@ -80,8 +81,9 @@ const updateProduct = asyncHandler(async (req, res) => {
     product.description = description;
     product.image = image;
     product.brand = brand;
-    product.category = category;
-    product.countInStock = countInStock;
+    product.size = size;
+    
+
 
     const updatedProduct = await product.save();
     res.json(updatedProduct);

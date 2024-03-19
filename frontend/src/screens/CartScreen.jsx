@@ -13,8 +13,9 @@ import { FaTrash } from 'react-icons/fa';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import { addToCart, removeFromCart } from '../slices/cartSlice';
-import { useGetCartsQuery, useRemoveCartItemMutation } from '../slices/cartsApiSlice';
-
+import { useGetCartsQuery, useDeleteCartItemMutation } from '../slices/cartsApiSlice';
+import { useAddItemToCartMutation } from '../slices/cartsApiSlice';
+import { toast } from 'react-toastify';
 
 const CartScreen = () => {
   const navigate = useNavigate();
@@ -27,23 +28,41 @@ const CartScreen = () => {
     data: cartItems,
     isLoading,
     error,
+    refetch,
   } = useGetCartsQuery();
   console.log("isLoading: ", isLoading);
   console.log("cartItems: ", cartItems);
 
-  const [removeCartItem, { isLoading: removeCartItemLoading }] = useRemoveCartItemMutation();
+  const [deleteItem] = useDeleteCartItemMutation();
+  const [addItemToCart] = useAddItemToCartMutation();
 
   // NOTE: no need for an async function here as we are not awaiting the
   // resolution of a Promise
-  const addToCartHandler = (product, qty) => {
-    dispatch(addToCart({ ...product, qty }));
+  const addToCartHandler = async (proId, qty, size, itemPrice) => {
+    try {
+      const res = await addItemToCart({
+        product: proId,
+        quantity: qty,
+        size: size,
+        itemPrice: itemPrice,
+      });
+      refetch();
+    } catch (err) {
+      console.log("err in addToCartHandler");
+      toast.error(err);
+    }
   };
 
-  const removeFromCartHandler = (id) => {
-    console.log('Removing product with ID:', id); 
-    removeCartItem(id); // Sử dụng hook removeCartItemMutation với id của sản phẩm
+  const deleteItemHandler = async (id) => {
+    if (window.confirm('Are you sure')) {
+      try {
+        await deleteItem(id);
+        refetch();
+      } catch (err) {
+        toast.error(err?.data?.message || err.error);
+      }
+    }
   };
-
   const checkoutHandler = () => {
     navigate('/login?redirect=/shipping');
   };
@@ -80,26 +99,28 @@ const CartScreen = () => {
                         <Link to={`/product/${item.product._id}`}>{item.product.name}</Link>
                       </Col>
                       <Col md={2}>${item.product.price} VND</Col>
+                      <Col md={2}>Size: {item.size2}</Col>
                       <Col md={2}>
                         <Form.Control
                           as='select'
-                          value={item.product.quantity}
+                          value={item.quantity}
                           onChange={(e) =>
-                            addToCartHandler(item.product, Number(e.target.value))
+                            addToCartHandler(item.product._id, Number(e.target.value), item.size2, item.product.price*Number(e.target.value))
                           }
                         >
-                          {[...Array(item.product.countInStock).keys()].map((x) => (
-                            <option key={x + 1} value={x + 1}>
-                              {x + 1}
-                            </option>
+                          {[...Array(item.product.size.find((sizeOption) => sizeOption.sizeName === item.size2).countInStock
+                              ).keys()].map((x) => (
+                                <option key={x + 1} value={x + 1}>
+                                  {x + 1}
+                                </option>
                           ))}
                         </Form.Control>
                       </Col>
-                      <Col md={2}>
+                      <Col md={1}>
                         <Button
                           type='button'
                           variant='light'
-                          onClick={() => removeFromCartHandler(item._id)}
+                          onClick={() => deleteItemHandler(item.product._id)}
                         >
                           <FaTrash />
                         </Button>
