@@ -46,7 +46,7 @@ const ProductScreen = () => {
       const res = await addItemToCart({
         product: product._id,
         quantity: qty,
-        size: product.size,
+        size: size,
         itemPrice: product.price * qty,
       }).unwrap();
       navigate('/cart');
