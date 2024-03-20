@@ -12,7 +12,7 @@ import { useUpdatePaymentMethodMutation, useGetMyOrdersNotValidQuery } from '../
 const PaymentScreen = () => {
   
   
-  const [paymentMethod, setPaymentMethod] = useState('PayPal');
+  const [paymentMethod, setPaymentMethod] = useState('Thanh toán khi nhận hàng');
   
 
   const {
@@ -51,16 +51,27 @@ const PaymentScreen = () => {
         <Form.Group>
           <Form.Label as='legend'>Select Method</Form.Label>
           <Col>
-            <Form.Check
-              className='my-2'
-              type='radio'
-              label='PayPal or Credit Card'
-              id='PayPal'
-              name='paymentMethod'
-              value='PayPal'
-              checked
-              onChange={(e) => setPaymentMethod(e.target.value)}
-            ></Form.Check>
+          <Form.Check
+            className='my-2'
+            type='radio'
+            label='Thanh toán khi nhận hàng'
+            id='cash'
+            name='paymentMethod'
+            value='Thanh toán khi nhận hàng'
+            checked={paymentMethod === 'Thanh toán khi nhận hàng'}
+            onChange={(e) => setPaymentMethod(e.target.value)}
+          ></Form.Check>
+          <Form.Check
+            className='my-2'
+            type='radio'
+            label='QR Code'
+            id='QR'
+            name='paymentMethod'
+            value='QR'
+            checked={paymentMethod === 'QR'}
+            onChange={(e) => setPaymentMethod(e.target.value)}
+          ></Form.Check>
+            
           </Col>
         </Form.Group>
 
