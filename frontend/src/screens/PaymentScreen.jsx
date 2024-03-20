@@ -10,10 +10,9 @@ import { useUpdatePaymentMethodMutation, useGetMyOrdersNotValidQuery } from '../
 
 
 const PaymentScreen = () => {
-  const navigate = useNavigate();
+  
   
   const [paymentMethod, setPaymentMethod] = useState('PayPal');
-  const [updatePaymentMethod] = useUpdatePaymentMethodMutation();
   
 
   const {
@@ -23,18 +22,22 @@ const PaymentScreen = () => {
     error,
   } = useGetMyOrdersNotValidQuery();
 
-
-
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  if (!isLoading && order==null)
+  navigate('/shipping');
 
   console.log("Order: ", order);
+  const [updatePaymentMethod] = useUpdatePaymentMethodMutation();
+
 
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      const res = await updatePaymentMethod(order._id, paymentMethod).unwrap();
-      navigate('/placeorder');
-    } catch (err) {
+      const res = await updatePaymentMethod({orderId: order._id, paymentMethod: paymentMethod}).unwrap();
+      navigate('/placeorder');}
+    catch (err) {
       console.log(err);
       toast.error(err);
     }
