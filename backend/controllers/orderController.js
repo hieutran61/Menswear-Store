@@ -2,6 +2,7 @@ import asyncHandler from '../middleware/asyncHandler.js';
 import Cart from '../models/cart.js';
 import Order from '../models/order.js';
 import Product from '../models/product.js';
+import readMail from '../utils/readMail.js';
 import { calcPrices } from '../utils/calcPrices.js';
 import { verifyPayPalPayment, checkIfNewTransaction } from '../utils/paypal.js';
 
@@ -74,7 +75,10 @@ const getOrderById = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id).populate(
     'user',
     'name email'
-  );
+  ).populate({
+    path: 'orderItems.product',
+    model: 'Product',
+  });
 
   if (order) {
     res.json(order);
@@ -233,6 +237,7 @@ const getMyOrderNotValid = asyncHandler(async (req, res) => {
 // @access  Private
 const placeOrder = asyncHandler(async (req, res) => {
   console.log("inside placeOrder() in orderController");
+  console.log("req body", req.body);
 
   const cart = await Cart.findOne({ user: req.user._id });
   const order = await Order.findById(req.params.id);
@@ -253,6 +258,12 @@ const placeOrder = asyncHandler(async (req, res) => {
       }
     }
 
+    if (req.body.paymentMethod == "QR") {
+      order.paymentResult = "Paid";
+      order.isPaid = true;
+      order.paidAt = new Date().getTime();
+    }
+
     order.isValid = true;
     cart.cartItems = [];
     await cart.save();
@@ -263,6 +274,46 @@ const placeOrder = asyncHandler(async (req, res) => {
     throw new Error('Order not found');
   }
 });
+
+
+// @desc    Place order
+// @route   GET /api/orders/:id
+// @access  Private
+const getMail = asyncHandler(async (req, res) => {
+  console.log("inside getMail");
+  const totalPrice = req.body.totalPrice;
+  const startTime = Date.now(); // Track start time for timeout
+
+  try {
+    let amount;
+    let timeoutId;
+
+    const checkEmail = async () => {
+      console.log("read mail");
+      amount = await readMail();
+
+      if (amount === 2000) {
+        clearTimeout(timeoutId);
+        res.json({ status: true });
+      } else if (Date.now() - startTime >= 60000) { // Check for timeout
+        clearTimeout(timeoutId);
+        res.json({ status: false });
+      } else {
+        // Schedule next call after 3 seconds
+        timeoutId = setTimeout(checkEmail, 3000);
+      }
+    };
+
+    // Initial call
+    await checkEmail();
+
+  } catch (error) {
+    console.error('Error reading email:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+  
 
 export {
   addOrderItems,
@@ -275,5 +326,6 @@ export {
   createOrder,
   updatePaymentMethod,
   getMyOrderNotValid,
-  placeOrder
+  placeOrder,
+  getMail
 };
