@@ -26,16 +26,20 @@ const PaymentScreen = () => {
   const navigate = useNavigate();
 
   if (!isLoading && order==null)
-  navigate('/shipping');
+    navigate('/shipping');
 
-  console.log("Order: ", order);
-  const [updatePaymentMethod] = useUpdatePaymentMethodMutation();
+  const [updatePaymentMethod, { isLoading: loadingUpdate }] = useUpdatePaymentMethodMutation();
 
 
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
+      console.log("paymentMethod: ", paymentMethod);
       const res = await updatePaymentMethod({orderId: order._id, paymentMethod: paymentMethod}).unwrap();
+      while (loadingUpdate)
+      {
+      }
+      console.log(loadingUpdate);
       navigate('/placeorder');}
     catch (err) {
       console.log(err);
@@ -58,7 +62,7 @@ const PaymentScreen = () => {
             id='cash'
             name='paymentMethod'
             value='Thanh toán khi nhận hàng'
-            checked={paymentMethod === 'Thanh toán khi nhận hàng'}
+            checked={paymentMethod == 'Thanh toán khi nhận hàng'}
             onChange={(e) => setPaymentMethod(e.target.value)}
           ></Form.Check>
           <Form.Check
@@ -68,7 +72,7 @@ const PaymentScreen = () => {
             id='QR'
             name='paymentMethod'
             value='QR'
-            checked={paymentMethod === 'QR'}
+            checked={paymentMethod == 'QR'}
             onChange={(e) => setPaymentMethod(e.target.value)}
           ></Form.Check>
             
