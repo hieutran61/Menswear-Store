@@ -199,19 +199,18 @@ const createOrder = asyncHandler(async (req, res) => {
 // @route   PUT /api/orders
 // @access  Private
 const updatePaymentMethod = asyncHandler(async (req, res) => {
-  const order = await Order.findById(req.params.id);
-  const { paymentMethod } = req.body;
-  console.log("paymentMethod", paymentMethod);
+  console.log("inside updatePaymentMethod() in orderController");
+  const { orderId, paymentMethod } = req.body;
+  const order = await Order.findById(req.body.orderId);
 
   if (order) {
     order.paymentMethod = paymentMethod;
     order.paymentResult = "Not paid";
     order.isPaid = false;
 
-    console.log(order);
-    // const updatedOrder = await order.save();
+    const updatedOrder = await order.save();
 
-    // res.json(updatedOrder);
+    res.json(updatedOrder);
   } else {
     res.status(404);
     throw new Error('Order not found');
