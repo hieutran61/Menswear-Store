@@ -63,7 +63,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
 // @route   GET /api/orders/myorders
 // @access  Private
 const getMyOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({ user: req.user._id });
+  const orders = await Order.find({ user: req.user._id, isValid: true });
   res.json(orders);
 });
 
@@ -153,45 +153,117 @@ const getOrders = asyncHandler(async (req, res) => {
 // @route   POST /api/orders
 // @access  Private
 const createOrder = asyncHandler(async (req, res) => {
+  console.log("inside createOrder() in orderController");
   const cart = await Cart.findOne({ user: req.user._id });
 
+  // calculate prices
+  const { cartTotal, taxPrice, shippingPrice, totalPrice } =
+    calcPrices(cart.cartItems);
 
-    // // calculate prices
-    // const { itemsPrice, taxPrice, shippingPrice, totalPrice } =
-    //   calcPrices(dbOrderItems);
+  var order = await Order.findOne({ user: req.user._id, isValid: false });
 
-    console.log("cart: ", {...cart});
-
-    const order = new Order({
-      ...cart._doc,
+  if (order) {
+    order.orderItems= cart.cartItems,
+    order.shippingAddress= req.body.shippingAddress,
+    order.taxPrice= taxPrice,
+    order.shippingPrice= shippingPrice,
+    order.totalPrice= totalPrice
+  } else {
+    order = new Order({
+      user: cart.user,
       orderItems: cart.cartItems,
-      shippingAddress: {
-        detailAddress: "",
-        city: "",
-        district: "",
-        ward: ""
-      },
-      paymentMethod: "",
-      paymentResult: {
-        id: "",
-        status: "",
-        update_time: "",
-        email_address: ""
-      },
-      taxPrice: 0,
-      shippingPrice: 0,
+      shippingAddress: req.body.shippingAddress,
+      paymentMethod: null,
+      paymentResult: null,
+      taxPrice: taxPrice,
+      shippingPrice: shippingPrice,
+      totalPrice: totalPrice,
       isPaid: false,
       paidAt: null,
       isDelivered: false,
-      deliveredAt: null
+      deliveredAt: null,
+      isValid: false
     });
+  }
 
-    // const createdOrder = await order.save();
 
-    console.log(order);
-
-    res.status(201).json(order);
   
+
+  const createdOrder = await order.save();
+
+  res.status(201).json(createdOrder);
+  
+});
+
+// @desc    Update payment method of order
+// @route   PUT /api/orders
+// @access  Private
+const updatePaymentMethod = asyncHandler(async (req, res) => {
+  console.log("inside updatePaymentMethod() in orderController");
+  const { orderId, paymentMethod } = req.body;
+  const order = await Order.findById(req.body.orderId);
+
+  if (order) {
+    console.log("paymentMethod", paymentMethod);
+    order.paymentMethod = paymentMethod;
+    order.paymentResult = "Not paid";
+    order.isPaid = false;
+
+    const updatedOrder = await order.save();
+
+    console.log(updatedOrder);
+    res.json(updatedOrder);
+  } else {
+    res.status(404);
+    throw new Error('Order not found');
+  }
+});
+
+// @desc    Get logged in user orders
+// @route   GET /api/orders/myorders
+// @access  Private
+const getMyOrderNotValid = asyncHandler(async (req, res) => {
+  const orders = await Order.find({ user: req.user._id, isValid: false }).populate({
+    path: 'orderItems.product',
+    model: 'Product',
+  });
+  res.json(orders[0]);
+});
+
+// @desc    Place order
+// @route   GET /api/orders/:id
+// @access  Private
+const placeOrder = asyncHandler(async (req, res) => {
+  console.log("inside placeOrder() in orderController");
+
+  const cart = await Cart.findOne({ user: req.user._id });
+  const order = await Order.findById(req.params.id);
+  if (order) {
+    // Lặp qua các sản phẩm trong đơn hàng để giảm số lượng sản phẩm từng kích cỡ
+    for (const orderItem of order.orderItems) {
+      const product = await Product.findById(orderItem.product);
+      if (product) {
+        // Duyệt qua từng kích cỡ của sản phẩm và giảm số lượng tương ứng
+        for (const size of product.size) {
+          if (size.sizeName === orderItem.size2) {
+            size.countInStock -= orderItem.quantity;
+            break; // Kết thúc vòng lặp sau khi giảm số lượng
+          }
+        }
+        // Lưu lại thông tin sản phẩm đã được cập nhật
+        await product.save();
+      }
+    }
+
+    order.isValid = true;
+    cart.cartItems = [];
+    await cart.save();
+    const updatedOrder = await order.save();
+    res.json(updatedOrder);
+  } else {
+    res.status(404);
+    throw new Error('Order not found');
+  }
 });
 
 export {
@@ -202,5 +274,8 @@ export {
   updateOrderToDelivered,
 
   getOrders,
-  createOrder
+  createOrder,
+  updatePaymentMethod,
+  getMyOrderNotValid,
+  placeOrder
 };

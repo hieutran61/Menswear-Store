@@ -16,6 +16,13 @@ const reviewSchema = mongoose.Schema(
   }
 );
 
+const sizeSchema = mongoose.Schema(
+  {
+    sizeName: { type: String, required: true },
+    countInStock: { type: Number, required: true, default: 0 },
+  },
+);
+
 const productSchema = mongoose.Schema(
   {
     name: {
@@ -50,12 +57,7 @@ const productSchema = mongoose.Schema(
       required: true,
       default: 0,
     },
-    size: [
-      {
-        sizeName: { type: String, required: true },
-        countInStock: { type: Number, required: true, default: 0 },
-      },
-    ],
+    size: [sizeSchema],
   },
   {
     timestamps: true,

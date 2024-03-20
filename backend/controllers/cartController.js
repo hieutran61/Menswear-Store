@@ -171,9 +171,10 @@ const addItemToCart = asyncHandler(async (req, res, next) => {
     if (existItem) {
       // Nếu sản phẩm đã tồn tại trong giỏ hàng, cập nhật `quantity` của sản phẩm
       existItem.quantity = quantity;
+      existItem.size2 = size;
     } else {
       // Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm mới sản phẩm vào giỏ hàng
-      existItem = { product, quantity, itemPrice };
+      existItem = { product, quantity, itemPrice, size2: size };
       cart.cartItems.push(existItem);
     }
 
@@ -199,7 +200,18 @@ const getAllItemsInCart = asyncHandler(async (req, res) => {
     return;
   }
 
-  res.json(cart.cartItems);
+  const itemsWithoutSize = cart.cartItems.map(item => {
+    const { product, quantity, itemPrice, size2 } = item;
+    const { _id, name, image, price, size } = product;
+    return {
+      product: { _id, name, image, price, size },
+      quantity,
+      itemPrice, 
+      size2
+    };
+  });
+
+  res.json(itemsWithoutSize);
 });
 
 // @desc    Remove item from cart
