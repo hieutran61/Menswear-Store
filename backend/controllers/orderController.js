@@ -173,8 +173,8 @@ const createOrder = asyncHandler(async (req, res) => {
       user: cart.user,
       orderItems: cart.cartItems,
       shippingAddress: req.body.shippingAddress,
-      paymentMethod: null,
-      paymentResult: null,
+      paymentMethod: "",
+      paymentResult: "",
       taxPrice: taxPrice,
       shippingPrice: shippingPrice,
       totalPrice: totalPrice,
@@ -204,14 +204,12 @@ const updatePaymentMethod = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.body.orderId);
 
   if (order) {
-    console.log("paymentMethod", paymentMethod);
     order.paymentMethod = paymentMethod;
     order.paymentResult = "Not paid";
     order.isPaid = false;
 
     const updatedOrder = await order.save();
 
-    console.log(updatedOrder);
     res.json(updatedOrder);
   } else {
     res.status(404);
