@@ -4,6 +4,7 @@ import {
     addItemToCart,
     getAllItemsInCart,
     deleteItem,
+    deleteAllItemsInCart
 } from '../controllers/cartController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import checkObjectId from '../middleware/checkObjectId.js';

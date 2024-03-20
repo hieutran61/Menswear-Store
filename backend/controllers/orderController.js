@@ -204,12 +204,14 @@ const updatePaymentMethod = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.body.orderId);
 
   if (order) {
+    console.log("paymentMethod", paymentMethod);
     order.paymentMethod = paymentMethod;
     order.paymentResult = "Not paid";
     order.isPaid = false;
 
     const updatedOrder = await order.save();
 
+    console.log(updatedOrder);
     res.json(updatedOrder);
   } else {
     res.status(404);
@@ -221,8 +223,47 @@ const updatePaymentMethod = asyncHandler(async (req, res) => {
 // @route   GET /api/orders/myorders
 // @access  Private
 const getMyOrderNotValid = asyncHandler(async (req, res) => {
-  const orders = await Order.find({ user: req.user._id, isValid: false });
+  const orders = await Order.find({ user: req.user._id, isValid: false }).populate({
+    path: 'orderItems.product',
+    model: 'Product',
+  });
   res.json(orders[0]);
+});
+
+// @desc    Place order
+// @route   GET /api/orders/:id
+// @access  Private
+const placeOrder = asyncHandler(async (req, res) => {
+  console.log("inside placeOrder() in orderController");
+
+  const cart = await Cart.findOne({ user: req.user._id });
+  const order = await Order.findById(req.params.id);
+  if (order) {
+    // Lặp qua các sản phẩm trong đơn hàng để giảm số lượng sản phẩm từng kích cỡ
+    for (const orderItem of order.orderItems) {
+      const product = await Product.findById(orderItem.product);
+      if (product) {
+        // Duyệt qua từng kích cỡ của sản phẩm và giảm số lượng tương ứng
+        for (const size of product.size) {
+          if (size.sizeName === orderItem.size2) {
+            size.countInStock -= orderItem.quantity;
+            break; // Kết thúc vòng lặp sau khi giảm số lượng
+          }
+        }
+        // Lưu lại thông tin sản phẩm đã được cập nhật
+        await product.save();
+      }
+    }
+
+    order.isValid = true;
+    cart.cartItems = [];
+    await cart.save();
+    const updatedOrder = await order.save();
+    res.json(updatedOrder);
+  } else {
+    res.status(404);
+    throw new Error('Order not found');
+  }
 });
 
 export {
@@ -235,5 +276,6 @@ export {
   getOrders,
   createOrder,
   updatePaymentMethod,
-  getMyOrderNotValid
+  getMyOrderNotValid,
+  placeOrder
 };
