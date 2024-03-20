@@ -1,28 +1,46 @@
 import { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import FormContainer from '../components/FormContainer';
 import CheckoutSteps from '../components/CheckoutSteps';
-import { saveShippingAddress } from '../slices/cartSlice';
+import { useGetCartsQuery } from '../slices/cartsApiSlice';
+import { useCreateOrderMutation } from '../slices/ordersApiSlice';
+
 
 const ShippingScreen = () => {
   const cart = useSelector((state) => state.cart);
-  const { shippingAddress } = cart;
 
-  const [address, setAddress] = useState(shippingAddress.address || '');
-  const [city, setCity] = useState(shippingAddress.city || '');
-  const [postalCode, setPostalCode] = useState( shippingAddress.postalCode || '');
-  const [phoneNumber, setPhoneNumber] = useState( shippingAddress. phoneNumber || '');
-  const [country, setCountry] = useState(shippingAddress.country || '');
+  const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [district, setPostalCode] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [ward, setCountry] = useState('');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const submitHandler = (e) => {
+  const [createOrder] = useCreateOrderMutation();
+
+  const submitHandler = async (e) => {
     e.preventDefault();
-    dispatch(saveShippingAddress({ phoneNumber, address, city, postalCode, country }));
-    navigate('/payment');
+
+    try {
+      const res = await createOrder({
+        shippingAddress: {
+          phoneNumber: phoneNumber,
+          detailAddress: address,
+          city: city,
+          district: district,
+          ward: ward
+        },
+      }).unwrap();
+      navigate('/payment');
+    } catch (err) {
+      console.log(err);
+      toast.error(err);
+    }
   };
 
   return (
@@ -52,23 +70,12 @@ const ShippingScreen = () => {
           ></Form.Control>
         </Form.Group>
 
-        <Form.Group className='my-2' controlId='city'>
-          <Form.Label>City</Form.Label>
-          <Form.Control
-            type='text'
-            placeholder='Enter city'
-            value={city}
-            required
-            onChange={(e) => setCity(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-
         <Form.Group className='my-2' controlId='District'>
           <Form.Label>District</Form.Label>
           <Form.Control
             type='text'
             placeholder='Enter District'
-            value={postalCode}
+            value={district}
             required
             onChange={(e) => setPostalCode(e.target.value)}
           ></Form.Control>
@@ -79,9 +86,21 @@ const ShippingScreen = () => {
           <Form.Control
             type='text'
             placeholder='Enter Ward'
-            value={country}
+            value={ward}
             required
             onChange={(e) => setCountry(e.target.value)}
+          ></Form.Control>
+        </Form.Group>
+
+        
+        <Form.Group className='my-2' controlId='city'>
+          <Form.Label>City</Form.Label>
+          <Form.Control
+            type='text'
+            placeholder='Enter city'
+            value={city}
+            required
+            onChange={(e) => setCity(e.target.value)}
           ></Form.Control>
         </Form.Group>
 

@@ -14,17 +14,25 @@ const PlaceOrderScreen = () => {
 
   const cart = useSelector((state) => state.cart);
 
-  const [createOrder, { isLoading, error }] = useCreateOrderMutation();
+  // const [createOrder, { isLoading, error }] = useCreateOrderMutation();
+  const {
+    data: order,
+    refetch,
+    isLoading,
+    error,
+  } = useGetMyOrdersNotValidQuery();
 
-  useEffect(() => {
-    if (!cart.shippingAddress.address) {
-      navigate('/shipping');
-    } else if (!cart.paymentMethod) {
-      navigate('/payment');
-    }
-  }, [cart.paymentMethod, cart.shippingAddress.address, navigate]);
+  // useEffect(() => {
+  //   if (!cart.shippingAddress.address) {
+  //     navigate('/shipping');
+  //   } else if (!cart.paymentMethod) {
+  //     navigate('/payment');
+  //   }
+  // }, [cart.paymentMethod, cart.shippingAddress.address, navigate]);
 
   const dispatch = useDispatch();
+
+  
   const placeOrderHandler = async () => {
     try {
       const res = await createOrder({
