@@ -21,7 +21,7 @@ const PlaceOrderScreen = () => {
 
 
   useEffect(() => {
-    if (order.paymentMethod) {
+    if ( order.paymentMethod=="" || order.paymentMethod) {
       // Force a re-render
       refetch();
     }
