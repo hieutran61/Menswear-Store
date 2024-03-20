@@ -33,7 +33,7 @@ const QRScreen = () => {
         const response = await getMail({ totalPrice: order?.totalPrice });
         console.log(response);
         if (response.data.status) {
-          const res = await placeOrder({orderId: order._id, paymentMethod: "QR"});
+          const res = await placeOrder({ orderId: order._id, paymentMethod: "QR" });
           navigate(`/order/${res.data._id}`);
         }
       } catch (error) {
@@ -49,7 +49,7 @@ const QRScreen = () => {
 
 
 
- 
+
 
 
   return (
@@ -64,12 +64,14 @@ const QRScreen = () => {
         <div>
           <h1>QR Code Screen</h1>
           {/* Hiển thị hình ảnh mã QR */}
-          <img src={`https://img.vietqr.io/image/TIMO-9007041152328-compact2.png?amount=${order?.totalPrice}`} alt="QR Code" />
+          <div style={{ textAlign: 'center' }}>
+            <img src={`https://img.vietqr.io/image/TIMO-9007041152328-compact2.png?amount=${order?.totalPrice}`} alt="QR Code" />
+          </div>        
         </div>
-    )}
+      )}
     </>
   );
-  
+
 };
 
 export default QRScreen;
