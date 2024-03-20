@@ -82,20 +82,6 @@ const OrderScreen = () => {
     toast.error(err.message);
   }
 
-  function createOrder(data, actions) {
-    return actions.order
-      .create({
-        purchase_units: [
-          {
-            amount: { value: order.totalPrice },
-          },
-        ],
-      })
-      .then((orderID) => {
-        return orderID;
-      });
-  }
-
   const deliverHandler = async () => {
     await deliverOrder(orderId);
     refetch();
@@ -126,15 +112,15 @@ const OrderScreen = () => {
               </p>
               <p>
               <strong>Phone number:</strong>
-              {order.shippingAddress. phoneNumber}
+              0{order.shippingAddress. phoneNumber}
               </p>
               <p>
                 <strong>Address:</strong>
                
-                {order.shippingAddress.address}, 
-                {order.shippingAddress.city},
-                {order.shippingAddress.postalCode},
-                {order.shippingAddress.country}
+                {order.shippingAddress.detailAddress},  
+                {order.shippingAddress.ward}, 
+                {order.shippingAddress.district}, 
+                {order.shippingAddress.city}
               </p>
               
               {order.isDelivered ? (
@@ -183,19 +169,19 @@ const OrderScreen = () => {
                       <Row>
                         <Col md={1}>
                           <Image
-                            src={item.image}
-                            alt={item.name}
+                            src={item.product.image}
+                            alt={item.product.name}
                             fluid
                             rounded
                           />
                         </Col>
                         <Col>
-                          <Link to={`/product/${item.product}`}>
-                            {item.name}
+                          <Link to={`/product/${item.product._id}`}>
+                            {item.product.name}
                           </Link>
                         </Col>
                         <Col md={4}>
-                          {item.qty} x {item.price}vnđ = {item.qty * item.price}vnđ
+                        {item.quantity} x {item.product.price} = { item.itemPrice} VND
                         </Col>
                       </Row>
                     </ListGroup.Item>
@@ -214,25 +200,25 @@ const OrderScreen = () => {
               <ListGroup.Item>
                 <Row>
                   <Col>Items</Col>
-                  <Col>{order.itemsPrice}vnđ</Col>
+                  <Col>{order.orderItems.reduce((acc, item) => acc + (item.itemPrice * 100) / 100, 0)} VND</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Shipping</Col>
-                  <Col>{order.shippingPrice}vnđ</Col>
+                  <Col>{order.shippingPrice} VND</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Tax</Col>
-                  <Col>{order.taxPrice}vnđ</Col>
+                  <Col>{order.taxPrice} VND</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Total</Col>
-                  <Col>{order.totalPrice}vnđ</Col>
+                  <Col>{order.totalPrice} VND</Col>
                 </Row>
               </ListGroup.Item>
               

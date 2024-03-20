@@ -37,9 +37,8 @@ const PlaceOrderScreen = () => {
         navigate(`/order/${res.data._id}`);
       }
       else if (order.paymentMethod == "QR"){
-
+        navigate(`/qr`);
       }
-      // dispatch(clearCartItems());
     } catch (err) {
       toast.error(err);
     }
