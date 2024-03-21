@@ -97,25 +97,25 @@ const OrderScreen = () => {
     <Message variant='danger'>{error.data.message}</Message>
   ) : (
     <>
-      <h1>Order {order._id}</h1>
+      <h1>Đơn hàng {order._id}</h1>
       <Row>
         <Col md={8}>
           <ListGroup variant='flush'>
             <ListGroup.Item>
-              <h2>Shipping</h2>
+              <h2>Thông tin nhận hàng</h2>
               <p>
-                <strong>Name: </strong> {order.user.name}
+                <strong>Tên: </strong> {order.user.name}
               </p>
               <p>
                 <strong>Email: </strong>{' '}
                 <a href={`mailto:${order.user.email}`}>{order.user.email}</a>
               </p>
               <p>
-              <strong>Phone number:</strong>
-              0{order.shippingAddress. phoneNumber}
+              <strong>Số điện thoại: </strong>
+              0{order.shippingAddress.phoneNumber}
               </p>
               <p>
-                <strong>Address:</strong>
+                <strong>Địa chỉ: </strong>
                
                 {order.shippingAddress.detailAddress},  
                 {order.shippingAddress.ward}, 
@@ -125,7 +125,7 @@ const OrderScreen = () => {
               
               {order.isDelivered ? (
                 <Message variant='success'>
-                Delivered on{' '}
+                Vận chuyển vào {' '}
                   {order.deliveredAt
                     ? new Date(
                         new Date(order.deliveredAt).getTime()
@@ -141,27 +141,43 @@ const OrderScreen = () => {
                     : 'Invalid Date Format'}
                 </Message>
               ) : (
-                <Message variant='danger'>Not Delivered</Message>
+                <Message variant='danger'>Chưa vận chuyển</Message>
               )}
             </ListGroup.Item>
 
             <ListGroup.Item>
-              <h2>Payment Method</h2>
+              <h2>Phương thức thanh toán</h2>
               <p>
-                <strong>Method: </strong>
+                <strong>Phương thức: </strong>
                 {order.paymentMethod}
               </p>
               {order.isPaid ? (
-                <Message variant='success'>Paid on {order.paidAt}</Message>
+                <Message variant='success'>
+                  Thanh toán vào {' '}
+                  {order.paidAt
+                    ? new Date(new Date(order.paidAt).getTime()).toLocaleString(
+                        'vi-VN',
+                        {
+                          year: 'numeric',
+                          month: 'numeric',
+                          day: 'numeric',
+                          hour: 'numeric',
+                          minute: 'numeric',
+                          second: 'numeric',
+                          timeZone: 'Asia/Ho_Chi_Minh',
+                        }
+                      )
+                    : 'Invalid Date Format'}
+                </Message>
               ) : (
-                <Message variant='danger'>Not Paid</Message>
+                <Message variant='danger'>Chưa thanh toán</Message>
               )}
             </ListGroup.Item>
 
             <ListGroup.Item>
-              <h2>Order Items</h2>
+              <h2>Thông tin sản phẩm</h2>
               {order.orderItems.length === 0 ? (
-                <Message>Order is empty</Message>
+                <Message>Đơn hàng trống</Message>
               ) : (
                 <ListGroup variant='flush'>
                   {order.orderItems.map((item, index) => (
@@ -195,29 +211,29 @@ const OrderScreen = () => {
           <Card>
             <ListGroup variant='flush'>
               <ListGroup.Item>
-                <h2>Order Summary</h2>
+                <h2>Tóm tắt đơn hàng</h2>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
-                  <Col>Items</Col>
+                  <Col>Tiền hàng</Col>
                   <Col>{order.orderItems.reduce((acc, item) => acc + (item.itemPrice * 100) / 100, 0)} VND</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
-                  <Col>Shipping</Col>
+                  <Col>Phí vận chuyển</Col>
                   <Col>{order.shippingPrice} VND</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
-                  <Col>Tax</Col>
+                  <Col>Thuế</Col>
                   <Col>{order.taxPrice} VND</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
-                  <Col>Total</Col>
+                  <Col>Thành tiền</Col>
                   <Col>{order.totalPrice} VND</Col>
                 </Row>
               </ListGroup.Item>
@@ -259,7 +275,7 @@ const OrderScreen = () => {
                     className='btn btn-block'
                     onClick={payOrderHandler}
                   >
-                    Mark As Paid
+                    Đánh dấu đã thanh toán
                   </Button>
                 </ListGroup.Item>
               )}
@@ -273,7 +289,7 @@ const OrderScreen = () => {
                     className='btn btn-block'
                     onClick={deliverHandler}
                   >
-                    Mark As Delivered
+                    Đánh dấu đã vận chuyển
                   </Button>
                 </ListGroup.Item>
               )}

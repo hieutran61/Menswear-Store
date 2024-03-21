@@ -32,7 +32,7 @@ const PlaceOrderScreen = () => {
   
   const placeOrderHandler = async () => {
     try {
-      if (order.paymentMethod == "Thanh toán khi nhận hàng") {
+      if (order.paymentMethod === "Thanh toán khi nhận hàng") {
         const res = await placeOrder({orderId: order._id});
         navigate(`/order/${res.data._id}`);
       }
@@ -59,29 +59,29 @@ const PlaceOrderScreen = () => {
             <Col md={8}>
               <ListGroup variant='flush'>
                 <ListGroup.Item>
-                  <h2>Shipping</h2>
+                  <h2>Thông tin giao hàng</h2>
                   <p>
-                    <strong>Address:</strong>
-                    {order.shippingAddress.detailAddress}, {order.shippingAddress.ward}{' '}
-                    {order.shippingAddress.district},{' '}
+                    <strong>Địa chỉ: </strong>
+                    {order.shippingAddress.detailAddress},{' '}{order.shippingAddress.ward}, 
+                    {' '}{order.shippingAddress.district},{' '}
                     {order.shippingAddress.city}
                   </p> 
                   <p>
-                    <strong>Phone number:</strong>
+                    <strong>Số điện thoại: </strong>
                     0{order.shippingAddress.phoneNumber}
                   </p>
                 </ListGroup.Item>
 
                 <ListGroup.Item>
-                  <h2>Payment Method</h2>
-                  <strong>Method: </strong>
+                  <h2>Phương thức thanh toán</h2>
+                  <strong>Phương thức: </strong>
                   {order.paymentMethod}
                 </ListGroup.Item>
 
                 <ListGroup.Item>
-                  <h2>Order Items</h2>
+                  <h2>Thông tin sản phẩm </h2>
                   {order.orderItems.length === 0 ? (
-                    <Message>Your order is empty</Message>
+                    <Message>Đơn hàng của bạn trống</Message>
                   ) : (
                     <ListGroup variant='flush'>
                       {order.orderItems.map((item, index) => (
@@ -115,30 +115,30 @@ const PlaceOrderScreen = () => {
               <Card>
                 <ListGroup variant='flush'>
                   <ListGroup.Item>
-                    <h2>Order Summary</h2>
+                    <h2>Tóm tắt đơn hàng</h2>
                   </ListGroup.Item>
                   <ListGroup.Item>
                     <Row>
-                      <Col>Items</Col>
-                      <Col>${order.orderItems.reduce((acc, item) => acc + (item.itemPrice * 100) / 100, 0)}</Col>
+                      <Col>Tiền hàng</Col>
+                      <Col>{order.orderItems.reduce((acc, item) => acc + (item.itemPrice * 100) / 100, 0)} VND</Col>
                     </Row>
                   </ListGroup.Item>
                   <ListGroup.Item>
                     <Row>
-                      <Col>Shipping</Col>
-                      <Col>${order.shippingPrice}</Col>
+                      <Col>Phí vận chuyển</Col>
+                      <Col>{order.shippingPrice} VND</Col>
                     </Row>
                   </ListGroup.Item>
                   <ListGroup.Item>
                     <Row>
-                      <Col>Tax</Col>
-                      <Col>${order.taxPrice}</Col>
+                      <Col>Thuế</Col>
+                      <Col>{order.taxPrice} VND</Col>
                     </Row>
                   </ListGroup.Item>
                   <ListGroup.Item>
                     <Row>
-                      <Col>Total</Col>
-                      <Col>${order.totalPrice}</Col>
+                      <Col>Thành tiền</Col>
+                      <Col>{order.totalPrice} VND</Col>
                     </Row>
                   </ListGroup.Item>
                   <ListGroup.Item>
@@ -153,7 +153,7 @@ const PlaceOrderScreen = () => {
                       disabled={order.cartItems === 0}
                       onClick={placeOrderHandler}
                     >
-                      Place Order
+                      Đặt hàng
                     </Button>
                     {isLoading && <Loader />}
                   </ListGroup.Item>

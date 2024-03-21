@@ -54,20 +54,20 @@ const Header = () => {
               <LinkContainer to='/cart'>
                 {/* Change color style to black */}
                 <Nav.Link style={{ color: '#000' }}>
-                  <FaShoppingCart /> Cart
+                  <FaShoppingCart /> Giỏ hàng
                 </Nav.Link>
               </LinkContainer>
               {userInfo ? (
                 <NavDropdown title={userInfo.name} id='username'>
                   <LinkContainer to='/profile'>
-                    <NavDropdown.Item>Profile</NavDropdown.Item>
+                    <NavDropdown.Item>Thông tin người dùng</NavDropdown.Item>
                   </LinkContainer>
-                  <NavDropdown.Item onClick={logoutHandler}>Logout</NavDropdown.Item>
+                  <NavDropdown.Item onClick={logoutHandler}>Đăng xuất</NavDropdown.Item>
                 </NavDropdown>
               ) : (
                 <LinkContainer to='/login'>
                   <Nav.Link style={{ color: '#000' }}>
-                    <FaUser /> Sign In
+                    <FaUser /> Đăng nhập
                   </Nav.Link>
                 </LinkContainer>
               )}
@@ -76,13 +76,13 @@ const Header = () => {
               {userInfo && userInfo.isAdmin && (
                 <NavDropdown title='Admin' id='adminmenu'>
                   <LinkContainer to='/admin/productlist'>
-                    <NavDropdown.Item>Products</NavDropdown.Item>
+                    <NavDropdown.Item>Sản phẩm</NavDropdown.Item>
                   </LinkContainer>
                   <LinkContainer to='/admin/orderlist'>
-                    <NavDropdown.Item>Orders</NavDropdown.Item>
+                    <NavDropdown.Item>Đơn hàng</NavDropdown.Item>
                   </LinkContainer>
                   <LinkContainer to='/admin/userlist'>
-                    <NavDropdown.Item>Users</NavDropdown.Item>
+                    <NavDropdown.Item>Người dùng</NavDropdown.Item>
                   </LinkContainer>
                 </NavDropdown>
               )}

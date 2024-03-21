@@ -82,10 +82,10 @@ const CartScreen = () => {
       ) : (
         <Row>
           <Col md={8}>
-            <h1 style={{ marginBottom: '20px' }}>Shopping Cart</h1>
+            <h1 style={{ marginBottom: '20px' }}>Giỏ hàng</h1>
             {cartItems.length === 0 ? (
               <Message>
-                Your cart is empty <Link to='/'>Go Back</Link>
+                Giỏ hàng của bạn đang trống <Link to='/'>Quay lại</Link>
               </Message>
             ) : (
               <ListGroup variant='flush'>
@@ -98,7 +98,7 @@ const CartScreen = () => {
                       <Col md={3}>
                         <Link to={`/product/${item.product._id}`}>{item.product.name}</Link>
                       </Col>
-                      <Col md={2}>${item.product.price} VND</Col>
+                      <Col md={2}>{item.product.price} VND</Col>
                       <Col md={2}>Size: {item.size2}</Col>
                       <Col md={2}>
                         <Form.Control
@@ -135,14 +135,14 @@ const CartScreen = () => {
             <Card>
               <ListGroup variant='flush'>
                 <ListGroup.Item>
-                  <h2>
-                    Subtotal ({cartItems.reduce((acc, item) => acc + item.quantity, 0)})
-                    items
-                  </h2>
-                  $
+                  <h4>
+                    Tổng có ({cartItems.reduce((acc, item) => acc + item.quantity, 0)})
+                    sản phẩm trong giỏ hàng
+                  </h4>
+                  
                   {cartItems
                     .reduce((acc, item) => acc + item.quantity * item.product.price, 0)
-                    .toFixed(2)}
+                    .toFixed(0)} VND
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Button
@@ -151,7 +151,7 @@ const CartScreen = () => {
                     disabled={cartItems.length === 0}
                     onClick={checkoutHandler}
                   >
-                    Proceed To Checkout
+                    Mua hàng
                   </Button>
                 </ListGroup.Item>
               </ListGroup>

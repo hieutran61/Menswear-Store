@@ -98,10 +98,10 @@ const CreateProductScreen = () => {
   return (
     <>
       <Link to='/admin/productlist' className='btn btn-light my-3'>
-        Go Back
+      Quay lại
       </Link>
       <FormContainer>
-        <h1>Create Product</h1>
+        <h1>Tạo sản phẩm mới</h1>
         {/* {loadingUpdate && <Loader />}
         {isLoading ? (
           <Loader />
@@ -110,30 +110,30 @@ const CreateProductScreen = () => {
         ) : ( */}
         <Form onSubmit={submitHandler}>
           <Form.Group controlId='name'>
-            <Form.Label>Name</Form.Label>
+            <Form.Label>Tên</Form.Label>
             <Form.Control
               type='name'
-              placeholder='Enter name'
+              placeholder='Nhập tên sản phẩm'
               value={name}
               onChange={(e) => setName(e.target.value)}
             ></Form.Control>
           </Form.Group>
 
           <Form.Group controlId='price'>
-            <Form.Label>Price</Form.Label>
+            <Form.Label>Giá tiền</Form.Label>
             <Form.Control
               type='number'
-              placeholder='Enter price'
+              placeholder='Nhập đơn giá'
               value={price}
               onChange={(e) => setPrice(e.target.value)}
             ></Form.Control>
           </Form.Group>
 
           <Form.Group controlId='image'>
-            <Form.Label>Image</Form.Label>
+            <Form.Label>Hình ảnh</Form.Label>
             <Form.Control
               type='text'
-              placeholder='Enter image url'
+              placeholder='Nhập đường dẫn hình ảnh sản phẩm'
               value={image}
               onChange={(e) => setImage(e.target.value)}
             ></Form.Control>
@@ -146,13 +146,13 @@ const CreateProductScreen = () => {
           </Form.Group>
 
           <Form.Group controlId='brand'>
-            <Form.Label>Type</Form.Label>
+            <Form.Label>Phân loại</Form.Label>
             <Form.Control
               as='select'
               value={brand}
               onChange={handleBrandChange}
             >
-              <option value=''>--Select Type--</option>
+              <option value=''>--Phân loại sản phẩm--</option>
               <option value='Quần'>Quần</option>
               <option value='Áo'>Áo</option>
             </Form.Control>
@@ -175,7 +175,7 @@ const CreateProductScreen = () => {
               <thead>
                 <tr>
                   <th>Size</th>
-                  <th>Quantity</th>
+                  <th>Số lượng</th>
                 </tr>
               </thead>
               <tbody>
@@ -183,14 +183,14 @@ const CreateProductScreen = () => {
                   <tr key={index}>
                     <td>
                       <Form.Group controlId={`size-${index}`}>
-                        <Form.Label>{sizeQuantity.size}</Form.Label>
+                        <Form.Label>{sizeQuantity.sizeName}</Form.Label>
                       </Form.Group>
                     </td>
                     <td>
                       <Form.Group controlId={`countInStock-${index}`}>
                         <Form.Control
                           type='number'
-                          placeholder='Enter quantity'
+                          placeholder='Nhập số lượng'
                           value={sizeQuantity.countInStock}
                           onChange={(e) =>
                             handleSizeQuantityChange(
@@ -209,17 +209,17 @@ const CreateProductScreen = () => {
           </div>
 
           <Form.Group controlId='description'>
-            <Form.Label>Description</Form.Label>
+            <Form.Label>Mô tả</Form.Label>
             <Form.Control
               type='text'
-              placeholder='Enter description'
+              placeholder='Nhập thông tin mô tả'
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             ></Form.Control>
           </Form.Group>
 
           <Button type='submit' variant='primary' style={{ marginTop: '1rem' }}>
-            Create
+            Tạo
           </Button>
         </Form>
         {/* )} */}

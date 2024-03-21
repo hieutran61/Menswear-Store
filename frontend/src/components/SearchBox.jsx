@@ -27,7 +27,7 @@ const SearchBox = () => {
         name='q'
         onChange={(e) => setKeyword(e.target.value)}
         value={keyword}
-        placeholder='Search Products...'
+        placeholder='Nhập tên sản phẩm...'
         style={{ marginRight: '10px', padding: '8px', border: '2px solid #422800', borderRadius: '30px' }}
       />
       <Button
