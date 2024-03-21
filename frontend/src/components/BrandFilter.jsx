@@ -22,9 +22,9 @@ const BrandFilter = ({ selectedBrand, onBrandClick }) => {
             <button
               type='button'
               className={`btn btn-outline-primary ${
-                selectedBrand === 'áo' ? 'active' : ''
+                selectedBrand === 'Áo' ? 'active' : ''
               }`}
-              onClick={() => onBrandClick('áo')}
+              onClick={() => onBrandClick('Áo')}
             >
               Các kiểu áo 
             </button>
@@ -33,9 +33,9 @@ const BrandFilter = ({ selectedBrand, onBrandClick }) => {
             <button
               type='button'
               className={`btn btn-outline-primary ${
-                selectedBrand === 'quần' ? 'active' : ''
+                selectedBrand === 'Quần' ? 'active' : ''
               }`}
-              onClick={() => onBrandClick('quần')}
+              onClick={() => onBrandClick('Quần')}
             >
              Các kiểu quần
             </button>
