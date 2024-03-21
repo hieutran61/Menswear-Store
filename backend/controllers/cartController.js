@@ -164,6 +164,18 @@ const addItemToCart = asyncHandler(async (req, res, next) => {
       cart = new cart({ user: rep.user._id, cartItems: [] });
     }
 
+    const productDetails = await Product.findById(product);
+    if (!productDetails) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    // Kiểm tra xem sản phẩm có tồn tại trong kho với size cụ thể không
+    const selectedSize = productDetails.size.find(s => s.sizeName === size);
+    if (!selectedSize || selectedSize.countInStock <= 0) {
+      console.log('Selected size is not available');
+      return res.status(400).json({ message: 'Selected size is not available' });
+    }
+
     let existItem = cart.cartItems.find(
       (x) => x && x.product && x.product.toString() === product && x.size2 === size
     );
@@ -171,6 +183,7 @@ const addItemToCart = asyncHandler(async (req, res, next) => {
     if (existItem) {
       // Nếu sản phẩm đã tồn tại trong giỏ hàng, cập nhật `quantity` của sản phẩm
       existItem.quantity = quantity;
+      existItem.itemPrice = itemPrice;
     } else {
       // Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm mới sản phẩm vào giỏ hàng
       existItem = { product, quantity, itemPrice, size2: size };
@@ -178,6 +191,7 @@ const addItemToCart = asyncHandler(async (req, res, next) => {
     }
 
     const updatedCart = await cart.save();
+    console.log("cart after add: ", updatedCart);
     res.json(updatedCart);
   } catch (error) {
     console.log(error);
@@ -188,6 +202,7 @@ const addItemToCart = asyncHandler(async (req, res, next) => {
 // @route   GET /api/cart
 // @access  Private
 const getAllItemsInCart = asyncHandler(async (req, res) => {
+  console.log("inside getAllItemsInCart()");
   const cart = await Cart.findOne({ user: req.user._id }).populate({
     path: 'cartItems.product',
     model: 'Product',
@@ -199,19 +214,46 @@ const getAllItemsInCart = asyncHandler(async (req, res) => {
     return;
   }
 
-  const itemsWithoutSize = cart.cartItems.map(item => {
+  console.log("cart before filter: ", cart);
+  // Lọc ra các cartItem có product có size bằng size2 và countInStock > 0
+  const filteredCartItems = cart.cartItems.filter(item => {
+    return (
+      item.product.size.some(size => size.sizeName === item.size2 && size.countInStock > 0) // Kiểm tra countInStock
+    );
+  });
+  console.log("Cart after filter: ", filteredCartItems);
+
+  const updatedCartItems = await Promise.all(filteredCartItems.map(async (item) => {
+    const product = await Product.findById(item.product); // Fetch product details
+    const availableSize = product.size.find((size) => size.sizeName === item.size2);
+
+    if (availableSize && (item.quantity > availableSize.countInStock)) {
+      item.quantity = availableSize.countInStock; // Adjust quantity
+      item.itemPrice = (item.quantity * product.price *100) / 100;
+    }
+
+    return item;
+  }));
+  console.log("updatedCartItems: ", updatedCartItems);
+
+  cart.cartItems = updatedCartItems;
+  await cart.save();
+
+
+  // Chuyển đổi thành định dạng mà bạn muốn trả về
+  const formattedCartItems = filteredCartItems.map(item => {
     const { _id: cartItemId, product, quantity, itemPrice, size2 } = item;
     const { _id, name, image, price, size } = product;
     return {
       _id: cartItemId,
       product: { _id, name, image, price, size },
       quantity,
-      itemPrice, 
+      itemPrice,
       size2
     };
   });
 
-  res.json(itemsWithoutSize);
+  res.json(formattedCartItems);
 });
 
 // @desc    Remove item from cart
