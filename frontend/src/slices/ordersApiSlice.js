@@ -17,10 +17,9 @@ export const orderApiSlice = apiSlice.injectEndpoints({
       keepUnusedDataFor: 5,
     }),
     payOrder: builder.mutation({
-      query: ({ orderId, details }) => ({
+      query: (orderId) => ({
         url: `${ORDERS_URL}/${orderId}/pay`,
         method: 'PUT',
-        body: details,
       }),
     }),
     getPaypalClientId: builder.query({
@@ -28,6 +27,13 @@ export const orderApiSlice = apiSlice.injectEndpoints({
         url: PAYPAL_URL,
       }),
       keepUnusedDataFor: 5,
+    }),
+    getMail: builder.mutation({
+      query: (data) => ({
+        url: `${ORDERS_URL}/qr`,
+        method: 'POST',
+        body: data,
+      }),
     }),
     getMyOrders: builder.query({
       query: () => ({
@@ -47,6 +53,27 @@ export const orderApiSlice = apiSlice.injectEndpoints({
         method: 'PUT',
       }),
     }),
+    updatePaymentMethod: builder.mutation({
+      query: (data) => ({
+        url: `${ORDERS_URL}/payment`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    getMyOrdersNotValid: builder.query({
+      query: () => ({
+        url: `${ORDERS_URL}/payment`,
+      }),
+      keepUnusedDataFor: 5,
+    }),
+    placeOrder: builder.mutation({
+      query: (data) => ({
+        url: `${ORDERS_URL}/${data.orderId}`,
+        method: 'PUT',
+        body: data
+      }),
+    }),
+    
   }),
 });
 
@@ -58,4 +85,8 @@ export const {
   useGetMyOrdersQuery,
   useGetOrdersQuery,
   useDeliverOrderMutation,
+  useUpdatePaymentMethodMutation,
+  useGetMyOrdersNotValidQuery,
+  usePlaceOrderMutation,
+  useGetMailMutation
 } = orderApiSlice;

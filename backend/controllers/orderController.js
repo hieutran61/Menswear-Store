@@ -1,6 +1,8 @@
 import asyncHandler from '../middleware/asyncHandler.js';
-import Order from '../models/orderModel.js';
-import Product from '../models/productModel.js';
+import Cart from '../models/cart.js';
+import Order from '../models/order.js';
+import Product from '../models/product.js';
+import readMail from '../utils/readMail.js';
 import { calcPrices } from '../utils/calcPrices.js';
 import { verifyPayPalPayment, checkIfNewTransaction } from '../utils/paypal.js';
 
@@ -62,7 +64,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
 // @route   GET /api/orders/myorders
 // @access  Private
 const getMyOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({ user: req.user._id });
+  const orders = await Order.find({ user: req.user._id, isValid: true });
   res.json(orders);
 });
 
@@ -73,7 +75,10 @@ const getOrderById = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id).populate(
     'user',
     'name email'
-  );
+  ).populate({
+    path: 'orderItems.product',
+    model: 'Product',
+  });
 
   if (order) {
     res.json(order);
@@ -87,30 +92,14 @@ const getOrderById = asyncHandler(async (req, res) => {
 // @route   PUT /api/orders/:id/pay
 // @access  Private
 const updateOrderToPaid = asyncHandler(async (req, res) => {
-  // NOTE: here we need to verify the payment was made to PayPal before marking
-  // the order as paid
-  const { verified, value } = await verifyPayPalPayment(req.body.id);
-  if (!verified) throw new Error('Payment not verified');
-
-  // check if this transaction has been used before
-  const isNewTransaction = await checkIfNewTransaction(Order, req.body.id);
-  if (!isNewTransaction) throw new Error('Transaction has been used before');
+  console.log("inside updateOrderToPaid()");
 
   const order = await Order.findById(req.params.id);
 
   if (order) {
-    // check the correct amount was paid
-    const paidCorrectAmount = order.totalPrice.toString() === value;
-    if (!paidCorrectAmount) throw new Error('Incorrect amount paid');
-
+    order.paymentResult = "Paid";
     order.isPaid = true;
     order.paidAt = Date.now();
-    order.paymentResult = {
-      id: req.body.id,
-      status: req.body.status,
-      update_time: req.body.update_time,
-      email_address: req.body.payer.email_address,
-    };
 
     const updatedOrder = await order.save();
 
@@ -148,11 +137,184 @@ const getOrders = asyncHandler(async (req, res) => {
   res.json(orders);
 });
 
+// @desc    Create new order
+// @route   POST /api/orders
+// @access  Private
+const createOrder = asyncHandler(async (req, res) => {
+  console.log("inside createOrder() in orderController");
+  const cart = await Cart.findOne({ user: req.user._id });
+
+  // calculate prices
+  const { cartTotal, taxPrice, shippingPrice, totalPrice } =
+    calcPrices(cart.cartItems);
+
+  var order = await Order.findOne({ user: req.user._id, isValid: false });
+
+  if (order) {
+    order.orderItems= cart.cartItems,
+    order.shippingAddress= req.body.shippingAddress,
+    order.taxPrice= taxPrice,
+    order.shippingPrice= shippingPrice,
+    order.totalPrice= totalPrice
+  } else {
+    order = new Order({
+      user: cart.user,
+      orderItems: cart.cartItems,
+      shippingAddress: req.body.shippingAddress,
+      paymentMethod: "",
+      paymentResult: "",
+      taxPrice: taxPrice,
+      shippingPrice: shippingPrice,
+      totalPrice: totalPrice,
+      isPaid: false,
+      paidAt: null,
+      isDelivered: false,
+      deliveredAt: null,
+      isValid: false
+    });
+  }
+
+
+  
+
+  const createdOrder = await order.save();
+
+  res.status(201).json(createdOrder);
+  
+});
+
+// @desc    Update payment method of order
+// @route   PUT /api/orders
+// @access  Private
+const updatePaymentMethod = asyncHandler(async (req, res) => {
+  console.log("inside updatePaymentMethod() in orderController");
+  const { orderId, paymentMethod } = req.body;
+  const order = await Order.findById(req.body.orderId);
+
+  if (order) {
+    order.paymentMethod = paymentMethod;
+    order.paymentResult = "Not paid";
+    order.isPaid = false;
+
+    const updatedOrder = await order.save();
+
+    res.json(updatedOrder);
+  } else {
+    res.status(404);
+    throw new Error('Order not found');
+  }
+});
+
+// @desc    Get logged in user orders
+// @route   GET /api/orders/myorders
+// @access  Private
+const getMyOrderNotValid = asyncHandler(async (req, res) => {
+  const orders = await Order.find({ user: req.user._id, isValid: false }).populate({
+    path: 'orderItems.product',
+    model: 'Product',
+  });
+  res.json(orders[0]);
+});
+
+// @desc    Place order
+// @route   GET /api/orders/:id
+// @access  Private
+const placeOrder = asyncHandler(async (req, res) => {
+  console.log("inside placeOrder() in orderController");
+  console.log("req body", req.body);
+
+  const cart = await Cart.findOne({ user: req.user._id });
+  const order = await Order.findById(req.params.id);
+  if (order && order.isValid == false) {
+    console.log("order: ", order);
+    // Lặp qua các sản phẩm trong đơn hàng để giảm số lượng sản phẩm từng kích cỡ
+    for (const orderItem of order.orderItems) {
+      const product = await Product.findById(orderItem.product);
+      if (product) {
+        // Duyệt qua từng kích cỡ của sản phẩm và giảm số lượng tương ứng
+        for (const size of product.size) {
+          if (size.sizeName === orderItem.size2) {
+            size.countInStock -= orderItem.quantity;
+            break; // Kết thúc vòng lặp sau khi giảm số lượng
+          }
+        }
+        // Lưu lại thông tin sản phẩm đã được cập nhật
+        await product.save();
+      }
+    }
+
+    if (req.body.paymentMethod == "QR") {
+      order.paymentResult = "Paid";
+      order.isPaid = true;
+      order.paidAt = new Date().getTime();
+    }
+
+    order.isValid = true;
+    const updatedOrder = await order.save();
+
+    cart.cartItems = [];
+    
+    await cart.save();
+    res.json(updatedOrder);
+  } else {
+    res.status(404);
+    throw new Error('Order not found');
+  }
+});
+
+
+// @desc    Place order
+// @route   GET /api/orders/:id
+// @access  Private
+const getMail = asyncHandler(async (req, res) => {
+  console.log("inside getMail");
+  const totalPrice = req.body.totalPrice;
+  const startTime = Date.now(); // Track start time for timeout
+
+  try {
+    let amount;
+    let timeoutId;
+
+    const checkEmail = async () => {
+      console.log("read mail");
+      amount = await readMail();
+
+      if (amount === 2000) {
+        clearTimeout(timeoutId);
+        res.json({ status: true });
+        res.end(); // Kết thúc kết nối HTTP sau khi gửi phản hồi
+      } else if (Date.now() - startTime >= 30000) { // Check for timeout (3min : 180000) (30s: 30000)
+        clearTimeout(timeoutId);
+        res.json({ status: false });
+        res.end(); // Kết thúc kết nối HTTP sau khi gửi phản hồi
+      } else {
+        // Schedule next call after 5 seconds
+        timeoutId = setTimeout(checkEmail, 5000);
+      }
+    };
+
+    // Initial call
+    await checkEmail();
+
+  } catch (error) {
+    console.error('Error reading email:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+  
+
 export {
   addOrderItems,
   getMyOrders,
   getOrderById,
   updateOrderToPaid,
   updateOrderToDelivered,
+
   getOrders,
+  createOrder,
+  updatePaymentMethod,
+  getMyOrderNotValid,
+  placeOrder,
+  getMail
 };

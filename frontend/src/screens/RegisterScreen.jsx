@@ -50,49 +50,49 @@ const RegisterScreen = () => {
 
   return (
     <FormContainer>
-      <h1>Register</h1>
+      <h1>Đăng ký</h1>
       <Form onSubmit={submitHandler}>
         <Form.Group className='my-2' controlId='name'>
-          <Form.Label>Name</Form.Label>
+          <Form.Label>Tên</Form.Label>
           <Form.Control
             type='name'
-            placeholder='Enter name'
+            placeholder='Nhập tên'
             value={name}
             onChange={(e) => setName(e.target.value)}
           ></Form.Control>
         </Form.Group>
 
         <Form.Group className='my-2' controlId='email'>
-          <Form.Label>Email Address</Form.Label>
+          <Form.Label>Email</Form.Label>
           <Form.Control
             type='email'
-            placeholder='Enter email'
+            placeholder='Nhập email'
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           ></Form.Control>
         </Form.Group>
 
         <Form.Group className='my-2' controlId='password'>
-          <Form.Label>Password</Form.Label>
+          <Form.Label>Mật khẩu</Form.Label>
           <Form.Control
             type='password'
-            placeholder='Enter password'
+            placeholder='Nhập mật khẩu'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           ></Form.Control>
         </Form.Group>
         <Form.Group className='my-2' controlId='confirmPassword'>
-          <Form.Label>Confirm Password</Form.Label>
+          <Form.Label>Xác nhận lại mật khẩu</Form.Label>
           <Form.Control
             type='password'
-            placeholder='Confirm password'
+            placeholder='Nhập lại mật khẩu'
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           ></Form.Control>
         </Form.Group>
 
         <Button disabled={isLoading} type='submit' variant='primary'>
-          Register
+          Đăng ký
         </Button>
 
         {isLoading && <Loader />}
@@ -100,9 +100,9 @@ const RegisterScreen = () => {
 
       <Row className='py-3'>
         <Col>
-          Already have an account?{' '}
+          Đã có tài khoản?{' '}
           <Link to={redirect ? `/login?redirect=${redirect}` : '/login'}>
-            Login
+            Đăng nhập
           </Link>
         </Col>
       </Row>

@@ -71,34 +71,31 @@ const OrderScreen = () => {
   }
 
   // TESTING ONLY! REMOVE BEFORE PRODUCTION
-  // async function onApproveTest() {
-  //   await payOrder({ orderId, details: { payer: {} } });
-  //   refetch();
+  async function onApproveTest() {
+    await payOrder({ orderId, details: { payer: {} } });
+    refetch();
 
-  //   toast.success('Order is paid');
-  // }
+    toast.success('Order is paid');
+  }
 
   function onError(err) {
     toast.error(err.message);
   }
 
-  function createOrder(data, actions) {
-    return actions.order
-      .create({
-        purchase_units: [
-          {
-            amount: { value: order.totalPrice },
-          },
-        ],
-      })
-      .then((orderID) => {
-        return orderID;
-      });
-  }
-
   const deliverHandler = async () => {
     await deliverOrder(orderId);
     refetch();
+  };
+
+  const payOrderHandler = async () => {
+    try {
+      const res = await payOrder(orderId);
+      refetch();
+      toast.success('Order is paid');
+    } catch (err) {
+      console.log("err", err);
+      toast.error(err?.data?.message || err.error);
+    }
   };
 
   return isLoading ? (
@@ -107,51 +104,87 @@ const OrderScreen = () => {
     <Message variant='danger'>{error.data.message}</Message>
   ) : (
     <>
-      <h1>Order {order._id}</h1>
+      <h1>Đơn hàng {order._id}</h1>
       <Row>
         <Col md={8}>
           <ListGroup variant='flush'>
             <ListGroup.Item>
-              <h2>Shipping</h2>
+              <h2>Thông tin nhận hàng</h2>
               <p>
-                <strong>Name: </strong> {order.user.name}
+                <strong>Tên: </strong> {order.user.name}
               </p>
               <p>
                 <strong>Email: </strong>{' '}
                 <a href={`mailto:${order.user.email}`}>{order.user.email}</a>
               </p>
               <p>
-                <strong>Address:</strong>
-                {order.shippingAddress.address}, {order.shippingAddress.city}{' '}
-                {order.shippingAddress.postalCode},{' '}
-                {order.shippingAddress.country}
+              <strong>Số điện thoại: </strong>
+              0{order.shippingAddress.phoneNumber}
               </p>
+              <p>
+                <strong>Địa chỉ: </strong>
+               
+                {order.shippingAddress.detailAddress},  
+                {order.shippingAddress.ward}, 
+                {order.shippingAddress.district}, 
+                {order.shippingAddress.city}
+              </p>
+              
               {order.isDelivered ? (
                 <Message variant='success'>
-                  Delivered on {order.deliveredAt}
+                Vận chuyển vào {' '}
+                  {order.deliveredAt
+                    ? new Date(
+                        new Date(order.deliveredAt).getTime()
+                      ).toLocaleString('vi-VN', {
+                        year: 'numeric',
+                        month: 'numeric',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        second: 'numeric',
+                        timeZone: 'Asia/Ho_Chi_Minh',
+                      })
+                    : 'Invalid Date Format'}
                 </Message>
               ) : (
-                <Message variant='danger'>Not Delivered</Message>
+                <Message variant='danger'>Chưa vận chuyển</Message>
               )}
             </ListGroup.Item>
 
             <ListGroup.Item>
-              <h2>Payment Method</h2>
+              <h2>Phương thức thanh toán</h2>
               <p>
-                <strong>Method: </strong>
+                <strong>Phương thức: </strong>
                 {order.paymentMethod}
               </p>
               {order.isPaid ? (
-                <Message variant='success'>Paid on {order.paidAt}</Message>
+                <Message variant='success'>
+                  Thanh toán vào {' '}
+                  {order.paidAt
+                    ? new Date(new Date(order.paidAt).getTime()).toLocaleString(
+                        'vi-VN',
+                        {
+                          year: 'numeric',
+                          month: 'numeric',
+                          day: 'numeric',
+                          hour: 'numeric',
+                          minute: 'numeric',
+                          second: 'numeric',
+                          timeZone: 'Asia/Ho_Chi_Minh',
+                        }
+                      )
+                    : 'Invalid Date Format'}
+                </Message>
               ) : (
-                <Message variant='danger'>Not Paid</Message>
+                <Message variant='danger'>Chưa thanh toán</Message>
               )}
             </ListGroup.Item>
 
             <ListGroup.Item>
-              <h2>Order Items</h2>
+              <h2>Thông tin sản phẩm</h2>
               {order.orderItems.length === 0 ? (
-                <Message>Order is empty</Message>
+                <Message>Đơn hàng trống</Message>
               ) : (
                 <ListGroup variant='flush'>
                   {order.orderItems.map((item, index) => (
@@ -159,19 +192,19 @@ const OrderScreen = () => {
                       <Row>
                         <Col md={1}>
                           <Image
-                            src={item.image}
-                            alt={item.name}
+                            src={item.product.image}
+                            alt={item.product.name}
                             fluid
                             rounded
                           />
                         </Col>
                         <Col>
-                          <Link to={`/product/${item.product}`}>
-                            {item.name}
+                          <Link to={`/product/${item.product._id}`}>
+                            {item.product.name}
                           </Link>
                         </Col>
                         <Col md={4}>
-                          {item.qty} x ${item.price} = ${item.qty * item.price}
+                        {item.quantity} x {item.product.price} = { item.itemPrice} VND
                         </Col>
                       </Row>
                     </ListGroup.Item>
@@ -185,47 +218,48 @@ const OrderScreen = () => {
           <Card>
             <ListGroup variant='flush'>
               <ListGroup.Item>
-                <h2>Order Summary</h2>
+                <h2>Tóm tắt đơn hàng</h2>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
-                  <Col>Items</Col>
-                  <Col>${order.itemsPrice}</Col>
+                  <Col>Tiền hàng</Col>
+                  <Col>{order.orderItems.reduce((acc, item) => acc + (item.itemPrice * 100) / 100, 0)} VND</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
-                  <Col>Shipping</Col>
-                  <Col>${order.shippingPrice}</Col>
+                  <Col>Phí vận chuyển</Col>
+                  <Col>{order.shippingPrice} VND</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
-                  <Col>Tax</Col>
-                  <Col>${order.taxPrice}</Col>
+                  <Col>Thuế</Col>
+                  <Col>{order.taxPrice} VND</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
-                  <Col>Total</Col>
-                  <Col>${order.totalPrice}</Col>
+                  <Col>Thành tiền</Col>
+                  <Col>{order.totalPrice} VND</Col>
                 </Row>
               </ListGroup.Item>
-              {!order.isPaid && (
+              
+              {/* {!order.isPaid && (
                 <ListGroup.Item>
                   {loadingPay && <Loader />}
 
                   {isPending ? (
                     <Loader />
                   ) : (
-                    <div>
+                    <div> */}
                       {/* THIS BUTTON IS FOR TESTING! REMOVE BEFORE PRODUCTION! */}
                       {/* <Button
                         style={{ marginBottom: '10px' }}
                         onClick={onApproveTest}
                       >
                         Test Pay Order
-                      </Button> */}
+                      </Button>
 
                       <div>
                         <PayPalButtons
@@ -237,24 +271,35 @@ const OrderScreen = () => {
                     </div>
                   )}
                 </ListGroup.Item>
+              )} */}
+
+              {loadingPay && <Loader />}
+
+              {userInfo && userInfo.isAdmin && !order.isPaid && (
+                <ListGroup.Item>
+                  <Button
+                    type='button'
+                    className='btn btn-block'
+                    onClick={payOrderHandler}
+                  >
+                    Đánh dấu đã thanh toán
+                  </Button>
+                </ListGroup.Item>
               )}
 
               {loadingDeliver && <Loader />}
 
-              {userInfo &&
-                userInfo.isAdmin &&
-                order.isPaid &&
-                !order.isDelivered && (
-                  <ListGroup.Item>
-                    <Button
-                      type='button'
-                      className='btn btn-block'
-                      onClick={deliverHandler}
-                    >
-                      Mark As Delivered
-                    </Button>
-                  </ListGroup.Item>
-                )}
+              {userInfo && userInfo.isAdmin && !order.isDelivered && (
+                <ListGroup.Item>
+                  <Button
+                    type='button'
+                    className='btn btn-block'
+                    onClick={deliverHandler}
+                  >
+                    Đánh dấu đã vận chuyển
+                  </Button>
+                </ListGroup.Item>
+              )}
             </ListGroup>
           </Card>
         </Col>

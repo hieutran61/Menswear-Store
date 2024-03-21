@@ -10,11 +10,11 @@ const Product = ({ product }) => {
       </Link>
 
       <Card.Body>
-        <Link to={`/product/${product._id}`}>
-          <Card.Title as='div' className='product-title'>
-            <strong>{product.name}</strong>
-          </Card.Title>
-        </Link>
+      <Link to={`/product/${product._id}`} style={{ textDecoration: 'none' }}>
+  <Card.Title as='div' className='product-title'>
+    <strong>{product.name}</strong>
+  </Card.Title>
+</Link>
 
         <Card.Text as='div'>
           <Rating
@@ -23,7 +23,7 @@ const Product = ({ product }) => {
           />
         </Card.Text>
 
-        <Card.Text as='h3'>${product.price}</Card.Text>
+        <Card.Text as='h3'>{product.price} VND</Card.Text>
       </Card.Body>
     </Card>
   );

@@ -1,6 +1,7 @@
 import asyncHandler from '../middleware/asyncHandler.js';
 import generateToken from '../utils/generateToken.js';
-import User from '../models/userModel.js';
+import User from '../models/user.js';
+import Cart from '../models/cart.js';
 
 // @desc    Auth user & get token
 // @route   POST /api/users/auth
@@ -45,6 +46,12 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
+    Cart.create({
+      user: user._id,
+      cartItems: [],
+      totalPrice: 0,
+    })
+
     generateToken(res, user._id);
 
     res.status(201).json({

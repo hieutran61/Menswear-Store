@@ -10,7 +10,7 @@ const OrderListScreen = () => {
 
   return (
     <>
-      <h1>Orders</h1>
+      <h1>Quản lý đơn hàng</h1>
       {isLoading ? (
         <Loader />
       ) : error ? (
@@ -22,11 +22,11 @@ const OrderListScreen = () => {
           <thead>
             <tr>
               <th>ID</th>
-              <th>USER</th>
-              <th>DATE</th>
-              <th>TOTAL</th>
-              <th>PAID</th>
-              <th>DELIVERED</th>
+              <th>NGƯỜI DÙNG</th>
+              <th>NGÀY MUA</th>
+              <th>TỔNG GIÁ</th>
+              <th>THANH TOÁN</th>
+              <th>VẬN CHUYỂN</th>
               <th></th>
             </tr>
           </thead>
@@ -36,7 +36,7 @@ const OrderListScreen = () => {
                 <td>{order._id}</td>
                 <td>{order.user && order.user.name}</td>
                 <td>{order.createdAt.substring(0, 10)}</td>
-                <td>${order.totalPrice}</td>
+                <td>{order.totalPrice} VND</td>
                 <td>
                   {order.isPaid ? (
                     order.paidAt.substring(0, 10)
@@ -54,7 +54,7 @@ const OrderListScreen = () => {
                 <td>
                   <LinkContainer to={`/order/${order._id}`}>
                     <Button variant='light' className='btn-sm'>
-                      Details
+                      Chi tiết
                     </Button>
                   </LinkContainer>
                 </td>

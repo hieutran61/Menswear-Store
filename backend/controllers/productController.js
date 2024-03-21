@@ -1,5 +1,5 @@
 import asyncHandler from '../middleware/asyncHandler.js';
-import Product from '../models/productModel.js';
+import Product from '../models/product.js';
 
 // @desc    Fetch all products
 // @route   GET /api/products
@@ -47,18 +47,21 @@ const getProductById = asyncHandler(async (req, res) => {
 // @route   POST /api/products
 // @access  Private/Admin
 const createProduct = asyncHandler(async (req, res) => {
+  const { name, image, description, price, size, brand } = req.body;
+
   const product = new Product({
-    name: 'Sample name',
-    price: 0,
-    user: req.user._id,
-    image: '/images/sample.jpg',
-    brand: 'Sample brand',
-    category: 'Sample category',
-    countInStock: 0,
+    name: name || 'Sample Product',
+    price: price || 0,
+    image: image || '/images/sample.jpg',
+    brand: brand,
+    reviews: [],
+    rating: 0,
     numReviews: 0,
-    description: 'Sample description',
+    description: description || 'Sample Description',
+    size: size 
   });
 
+  console.log("product: ", product);
   const createdProduct = await product.save();
   res.status(201).json(createdProduct);
 });
@@ -67,7 +70,7 @@ const createProduct = asyncHandler(async (req, res) => {
 // @route   PUT /api/products/:id
 // @access  Private/Admin
 const updateProduct = asyncHandler(async (req, res) => {
-  const { name, price, description, image, brand, category, countInStock } =
+  const { name, price, description, image, brand, size } =
     req.body;
 
   const product = await Product.findById(req.params.id);
@@ -78,8 +81,9 @@ const updateProduct = asyncHandler(async (req, res) => {
     product.description = description;
     product.image = image;
     product.brand = brand;
-    product.category = category;
-    product.countInStock = countInStock;
+    product.size = size;
+    
+
 
     const updatedProduct = await product.save();
     res.json(updatedProduct);

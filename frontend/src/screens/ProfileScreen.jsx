@@ -55,11 +55,11 @@ const ProfileScreen = () => {
   return (
     <Row>
       <Col md={3}>
-        <h2>User Profile</h2>
+        <h2>Thông tin người dùng</h2>
 
         <Form onSubmit={submitHandler}>
           <Form.Group className='my-2' controlId='name'>
-            <Form.Label>Name</Form.Label>
+            <Form.Label>Tên</Form.Label>
             <Form.Control
               type='text'
               placeholder='Enter name'
@@ -69,7 +69,7 @@ const ProfileScreen = () => {
           </Form.Group>
 
           <Form.Group className='my-2' controlId='email'>
-            <Form.Label>Email Address</Form.Label>
+            <Form.Label>Email</Form.Label>
             <Form.Control
               type='email'
               placeholder='Enter email'
@@ -79,33 +79,33 @@ const ProfileScreen = () => {
           </Form.Group>
 
           <Form.Group className='my-2' controlId='password'>
-            <Form.Label>Password</Form.Label>
+            <Form.Label>Mật khẩu</Form.Label>
             <Form.Control
               type='password'
-              placeholder='Enter password'
+              placeholder='Nhập mật khẩu mới'
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             ></Form.Control>
           </Form.Group>
 
           <Form.Group className='my-2' controlId='confirmPassword'>
-            <Form.Label>Confirm Password</Form.Label>
+            <Form.Label>Xác nhận mật khẩu</Form.Label>
             <Form.Control
               type='password'
-              placeholder='Confirm password'
+              placeholder='Xác nhận mật khẩu mới'
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             ></Form.Control>
           </Form.Group>
 
           <Button type='submit' variant='primary'>
-            Update
+            Cập nhật
           </Button>
           {loadingUpdateProfile && <Loader />}
         </Form>
       </Col>
       <Col md={9}>
-        <h2>My Orders</h2>
+        <h2>Đơn hàng của tôi</h2>
         {isLoading ? (
           <Loader />
         ) : error ? (
@@ -117,10 +117,10 @@ const ProfileScreen = () => {
             <thead>
               <tr>
                 <th>ID</th>
-                <th>DATE</th>
-                <th>TOTAL</th>
-                <th>PAID</th>
-                <th>DELIVERED</th>
+                <th>NGÀY</th>
+                <th>ĐƠN GIÁ</th>
+                <th>THANH TOÁN</th>
+                <th>VẬN CHUYỂN</th>
                 <th></th>
               </tr>
             </thead>
@@ -147,7 +147,7 @@ const ProfileScreen = () => {
                   <td>
                     <LinkContainer to={`/order/${order._id}`}>
                       <Button className='btn-sm' variant='light'>
-                        Details
+                        Chi tiết
                       </Button>
                     </LinkContainer>
                   </td>
