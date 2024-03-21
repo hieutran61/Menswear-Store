@@ -37,6 +37,7 @@ const ProductScreen = () => {
   const [addItemToCart] = useAddItemToCartMutation();
 
   const addToCartHandler = async () => {
+    console.log("add item to cart, quantity: ", qty);
     try {
       const res = await addItemToCart({
         product: product._id,
@@ -86,7 +87,7 @@ const ProductScreen = () => {
   return (
     <>
       <Link className='btn btn-light my-3' to='/'>
-        Go Back
+       Quay lại
       </Link>
       {isLoading ? (
         <Loader />
@@ -109,12 +110,12 @@ const ProductScreen = () => {
                 <ListGroup.Item>
                   <Rating
                     value={product.rating}
-                    text={`${product.numReviews} reviews`}
+                    text={`${product.numReviews} đánh giá`}
                   />
                 </ListGroup.Item>
-                <ListGroup.Item>Price: ${product.price}</ListGroup.Item>
+                <ListGroup.Item>Giá: {product.price} VND</ListGroup.Item>
                 <ListGroup.Item>
-                  Description: {product.description}
+                  Mô tả: {product.description}
                 </ListGroup.Item>
               </ListGroup>
             </Col>
@@ -123,19 +124,19 @@ const ProductScreen = () => {
                 <ListGroup variant='flush'>
                   <ListGroup.Item>
                     <Row>
-                      <Col>Price:</Col>
+                      <Col>Giá:</Col>
                       <Col>
-                        <strong>${product.price}</strong>
+                        <strong>{product.price} VND</strong>
                       </Col>
                     </Row>
                   </ListGroup.Item>
                   <ListGroup.Item>
                     <Row>
-                      <Col>Status:</Col>
+                      <Col>Trạng thái:</Col>
                       <Col>
                       {product.size.find((sizeOption) => sizeOption.sizeName === size)?.countInStock > 0
-                      ? 'In Stock'
-                      : 'Out Of Stock'}
+                      ? 'Còn hàng'
+                      : 'Hết hàng'}
                       </Col>
                     </Row>
                   </ListGroup.Item>
@@ -168,7 +169,7 @@ const ProductScreen = () => {
                   {size && product.size.find((sizeOption) => sizeOption.sizeName === size)?.countInStock > 0 && (
                     <ListGroup.Item>
                       <Row>
-                        <Col>Qty</Col>
+                        <Col>Số lượng</Col>
                         <Col>
                           <Form.Control
                             as='select'
@@ -192,10 +193,10 @@ const ProductScreen = () => {
                     <Button
                       className='btn-block'
                       type='button'
-                      disabled={product.size.find((sizeOption) => sizeOption.sizeName === size)?.countInStock === 0}
+                      disabled={size && product.size.find((sizeOption) => sizeOption.sizeName === size)?.countInStock <= 0}
                       onClick={addToCartHandler}
                     >
-                      Add To Cart
+                      Thêm vào giỏ
                     </Button>
                   </ListGroup.Item>
                 </ListGroup>
@@ -204,8 +205,8 @@ const ProductScreen = () => {
           </Row>
           <Row className='review'>
             <Col md={6}>
-              <h2>Reviews</h2>
-              {product.reviews.length === 0 && <Message>No Reviews</Message>}
+              <h2>Đánh giá</h2>
+              {product.reviews.length === 0 && <Message>0 đánh giá</Message>}
               <ListGroup variant='flush'>
                 {product.reviews.map((review) => (
                   <ListGroup.Item key={review._id}>
@@ -216,30 +217,30 @@ const ProductScreen = () => {
                   </ListGroup.Item>
                 ))}
                 <ListGroup.Item>
-                  <h2>Write a Customer Review</h2>
+                  <h2>Hãy viết đánh giá của bạn</h2>
 
                   {loadingProductReview && <Loader />}
 
                   {userInfo ? (
                     <Form onSubmit={submitHandler}>
                       <Form.Group className='my-2' controlId='rating'>
-                        <Form.Label>Rating</Form.Label>
+                        <Form.Label>Chấm điểm</Form.Label>
                         <Form.Control
                           as='select'
                           required
                           value={rating}
                           onChange={(e) => setRating(e.target.value)}
                         >
-                          <option value=''>Select...</option>
-                          <option value='1'>1 - Poor</option>
-                          <option value='2'>2 - Fair</option>
-                          <option value='3'>3 - Good</option>
-                          <option value='4'>4 - Very Good</option>
-                          <option value='5'>5 - Excellent</option>
+                          <option value=''>Lựa chọn...</option>
+                          <option value='1'>1 - Rất xấu</option>
+                          <option value='2'>2 - Xấu</option>
+                          <option value='3'>3 - Bình thường</option>
+                          <option value='4'>4 - Đẹp</option>
+                          <option value='5'>5 - Rất đẹp</option>
                         </Form.Control>
                       </Form.Group>
                       <Form.Group className='my-2' controlId='comment'>
-                        <Form.Label>Comment</Form.Label>
+                        <Form.Label>Mô tả</Form.Label>
                         <Form.Control
                           as='textarea'
                           row='3'
@@ -253,12 +254,12 @@ const ProductScreen = () => {
                         type='submit'
                         variant='primary'
                       >
-                        Submit
+                        Gửi
                       </Button>
                     </Form>
                   ) : (
                     <Message>
-                      Please <Link to='/login'>sign in</Link> to write a review
+                      Vui lòng <Link to='/login'>đăng nhập</Link> để viết đánh giá
                     </Message>
                   )}
                 </ListGroup.Item>

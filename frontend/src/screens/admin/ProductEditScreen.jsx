@@ -20,9 +20,9 @@ const ProductEditScreen = () => {
   const [brand, setBrand] = useState('');
   const [description, setDescription] = useState('');
   const [sizeQuantities, setSizeQuantities] = useState([
-    { size: 'S', quantity: '' },
-    { size: 'M', quantity: '' },
-    { size: 'L', quantity: '' },
+    { sizeName: 'S', countInStock: '' },
+    { sizeName: 'M', countInStock: '' },
+    { sizeName: 'L', countInStock: '' },
   ]); // Mảng lưu trữ thông tin về size và số lượng
 
   const handleSizeQuantityChange = (index, field, value) => {
@@ -97,10 +97,10 @@ const ProductEditScreen = () => {
   return (
     <>
       <Link to='/admin/productlist' className='btn btn-light my-3'>
-        Go Back
+        Quay lại
       </Link>
       <FormContainer>
-        <h1>Edit Product</h1>
+        <h1>Chỉnh sửa sản phẩm</h1>
         {loadingUpdate && <Loader />}
         {isLoading ? (
           <Loader />
@@ -109,30 +109,30 @@ const ProductEditScreen = () => {
         ) : (
           <Form onSubmit={submitHandler}>
             <Form.Group controlId='name'>
-              <Form.Label>Name</Form.Label>
+              <Form.Label>Tên</Form.Label>
               <Form.Control
                 type='name'
-                placeholder='Enter name'
+                placeholder='Nhập tên sản phẩm'
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               ></Form.Control>
             </Form.Group>
 
             <Form.Group controlId='price'>
-              <Form.Label>Price</Form.Label>
+              <Form.Label>Giá tiền</Form.Label>
               <Form.Control
                 type='number'
-                placeholder='Enter price'
+                placeholder='Nhập đơn giá'
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
               ></Form.Control>
             </Form.Group>
 
             <Form.Group controlId='image'>
-              <Form.Label>Image</Form.Label>
+              <Form.Label>Hình ảnh</Form.Label>
               <Form.Control
                 type='text'
-                placeholder='Enter image url'
+                placeholder='Nhập đường dẫn hình ảnh sản phẩm'
                 value={image}
                 onChange={(e) => setImage(e.target.value)}
               ></Form.Control>
@@ -145,13 +145,13 @@ const ProductEditScreen = () => {
             </Form.Group>
 
             <Form.Group controlId='brand'>
-              <Form.Label>Type</Form.Label>
+              <Form.Label>Phân loại</Form.Label>
               <Form.Control
                 as='select'
                 value={brand}
                 onChange={handleBrandChange}
               >
-                <option value=''>--Select Type--</option>
+                <option value=''>--Phân loại sản phẩm--</option>
                 <option value='Quần'>Quần</option>
                 <option value='Áo'>Áo</option>
               </Form.Control>
@@ -174,7 +174,7 @@ const ProductEditScreen = () => {
                 <thead>
                   <tr>
                     <th>Size</th>
-                    <th>Quantity</th>
+                    <th>Số lượng</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -182,19 +182,19 @@ const ProductEditScreen = () => {
                     <tr key={index}>
                       <td>
                         <Form.Group controlId={`size-${index}`}>
-                          <Form.Label>{sizeQuantity.size}</Form.Label>
+                          <Form.Label>{sizeQuantity.sizeName}</Form.Label>
                         </Form.Group>
                       </td>
                       <td>
                         <Form.Group controlId={`quantity-${index}`}>
                           <Form.Control
                             type='number'
-                            placeholder='Enter quantity'
-                            value={sizeQuantity.quantity}
+                            placeholder='Nhập số lượng'
+                            value={sizeQuantity.countInStock}
                             onChange={(e) =>
                               handleSizeQuantityChange(
                                 index,
-                                'quantity',
+                                'countInStock',
                                 e.target.value
                               )
                             }
@@ -208,10 +208,10 @@ const ProductEditScreen = () => {
             </div>
 
             <Form.Group controlId='description'>
-              <Form.Label>Description</Form.Label>
+              <Form.Label>Mô tả</Form.Label>
               <Form.Control
                 type='text'
-                placeholder='Enter description'
+                placeholder='Nhập thông tin mô tả'
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               ></Form.Control>
@@ -222,7 +222,7 @@ const ProductEditScreen = () => {
               variant='primary'
               style={{ marginTop: '1rem' }}
             >
-              Update
+              Cập nhật
             </Button>
           </Form>
         )}

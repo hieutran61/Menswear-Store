@@ -51,12 +51,12 @@ const ProductListScreen = () => {
     <>
       <Row className='align-items-center'>
         <Col>
-          <h1>Products</h1>
+          <h1>Sản phẩm</h1>
         </Col>
         <Col className='text-end'>
           <LinkContainer to ={`/admin/createProduct`}>
           <Button className='my-3'>
-            <FaPlus /> Create Product
+            <FaPlus /> Thêm sản phẩm mới
           </Button>
           </LinkContainer>  
         </Col>
@@ -74,9 +74,9 @@ const ProductListScreen = () => {
             <thead>
               <tr>
                 <th>ID</th>
-                <th>NAME</th>
-                <th>PRICE</th>
-                <th>ACTION</th>
+                <th>TÊN</th>
+                <th>GIÁ TIỀN</th>
+                <th>HÀNH ĐỘNG</th>
               </tr>
             </thead>
             <tbody>
@@ -84,7 +84,7 @@ const ProductListScreen = () => {
                 <tr key={product._id}>
                   <td>{product._id}</td>
                   <td>{product.name}</td>
-                  <td>${product.price}</td>
+                  <td>{product.price} VND</td>
                   <td>
                     <LinkContainer to={`/admin/product/${product._id}/edit`}>
                       <Button variant='light' className='btn-sm mx-2'>

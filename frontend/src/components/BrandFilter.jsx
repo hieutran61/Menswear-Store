@@ -5,7 +5,7 @@ const BrandFilter = ({ selectedBrand, onBrandClick }) => {
   return (
     <Row className='mb-4' style={{ color: 'black' }}>
       <Col>
-        <h5> các loại quần áo   </h5>
+        <h5> Các loại quần áo   </h5>
         <ul className='list-inline'>
           <li className='list-inline-item'>
             <button
@@ -22,22 +22,22 @@ const BrandFilter = ({ selectedBrand, onBrandClick }) => {
             <button
               type='button'
               className={`btn btn-outline-primary ${
-                selectedBrand === 'áo' ? 'active' : ''
+                selectedBrand === 'Áo' ? 'active' : ''
               }`}
-              onClick={() => onBrandClick('áo')}
+              onClick={() => onBrandClick('Áo')}
             >
-              các kiểu áo 
+              Các kiểu áo 
             </button>
           </li>
           <li className='list-inline-item'>
             <button
               type='button'
               className={`btn btn-outline-primary ${
-                selectedBrand === 'quần' ? 'active' : ''
+                selectedBrand === 'Quần' ? 'active' : ''
               }`}
-              onClick={() => onBrandClick('quần')}
+              onClick={() => onBrandClick('Quần')}
             >
-             các kiểu quần
+             Các kiểu quần
             </button>
           </li>
          

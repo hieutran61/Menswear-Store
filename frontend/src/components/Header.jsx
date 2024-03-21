@@ -9,11 +9,10 @@ import { logout } from '../slices/authSlice';
 import SearchBox from './SearchBox';
 import { resetCart } from '../slices/cartSlice';
 import logo from '../assets/logo.jpg';
-
+import { useGetCartsQuery } from '../slices/cartsApiSlice';
 const Header = () => {
-  const { cartItems } = useSelector((state) => state.cart);
+  // const { cartItems } = useSelector((state) => state.cart);
   const { userInfo } = useSelector((state) => state.auth);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -23,7 +22,6 @@ const Header = () => {
     try {
       await logoutApiCall().unwrap();
       dispatch(logout());
-      dispatch(resetCart());
       navigate('/login');
     } catch (err) {
       console.error(err);
@@ -56,25 +54,20 @@ const Header = () => {
               <LinkContainer to='/cart'>
                 {/* Change color style to black */}
                 <Nav.Link style={{ color: '#000' }}>
-                  <FaShoppingCart /> Cart
-                  {cartItems.length > 0 && (
-                    <Badge pill bg='success' style={{ marginLeft: '5px' }}>
-                      {cartItems.reduce((a, c) => a + c.qty, 0)}
-                    </Badge>
-                  )}
+                  <FaShoppingCart /> Giỏ hàng
                 </Nav.Link>
               </LinkContainer>
               {userInfo ? (
                 <NavDropdown title={userInfo.name} id='username'>
                   <LinkContainer to='/profile'>
-                    <NavDropdown.Item>Profile</NavDropdown.Item>
+                    <NavDropdown.Item>Thông tin người dùng</NavDropdown.Item>
                   </LinkContainer>
-                  <NavDropdown.Item onClick={logoutHandler}>Logout</NavDropdown.Item>
+                  <NavDropdown.Item onClick={logoutHandler}>Đăng xuất</NavDropdown.Item>
                 </NavDropdown>
               ) : (
                 <LinkContainer to='/login'>
                   <Nav.Link style={{ color: '#000' }}>
-                    <FaUser /> Sign In
+                    <FaUser /> Đăng nhập
                   </Nav.Link>
                 </LinkContainer>
               )}
@@ -83,13 +76,13 @@ const Header = () => {
               {userInfo && userInfo.isAdmin && (
                 <NavDropdown title='Admin' id='adminmenu'>
                   <LinkContainer to='/admin/productlist'>
-                    <NavDropdown.Item>Products</NavDropdown.Item>
+                    <NavDropdown.Item>Sản phẩm</NavDropdown.Item>
                   </LinkContainer>
                   <LinkContainer to='/admin/orderlist'>
-                    <NavDropdown.Item>Orders</NavDropdown.Item>
+                    <NavDropdown.Item>Đơn hàng</NavDropdown.Item>
                   </LinkContainer>
                   <LinkContainer to='/admin/userlist'>
-                    <NavDropdown.Item>Users</NavDropdown.Item>
+                    <NavDropdown.Item>Người dùng</NavDropdown.Item>
                   </LinkContainer>
                 </NavDropdown>
               )}

@@ -8,7 +8,7 @@ const orderItem = mongoose.Schema({
   },
   quantity: { type: Number, required: true },
   itemPrice: { type: Number, required: true },
-  size: {type: String, required: true}
+  size2: {type: String, required: true}
 });
 
 const shippingAddressSchema = mongoose.Schema({
@@ -29,14 +29,10 @@ const orderSchema = mongoose.Schema(
     orderItems: [orderItem],
     shippingAddress: shippingAddressSchema,
     paymentMethod: {
-      type: String,
-      required: true,
+      type: String
     },
     paymentResult: {
-      id: { type: String },
-      status: { type: String },
-      update_time: { type: String },
-      email_address: { type: String },
+      type: String
     },
     taxPrice: {
       type: Number,

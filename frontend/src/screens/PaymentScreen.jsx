@@ -2,54 +2,85 @@ import { useState, useEffect } from 'react';
 import { Form, Button, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import FormContainer from '../components/FormContainer';
 import CheckoutSteps from '../components/CheckoutSteps';
 import { savePaymentMethod } from '../slices/cartSlice';
+import { useUpdatePaymentMethodMutation, useGetMyOrdersNotValidQuery } from '../slices/ordersApiSlice';
+
 
 const PaymentScreen = () => {
-  const navigate = useNavigate();
-  const cart = useSelector((state) => state.cart);
-  const { shippingAddress } = cart;
+  
+  
+  const [paymentMethod, setPaymentMethod] = useState('Thanh toán khi nhận hàng');
+  
 
-  useEffect(() => {
-    if (!shippingAddress.address) {
-      navigate('/shipping');
-    }
-  }, [navigate, shippingAddress]);
-
-  const [paymentMethod, setPaymentMethod] = useState('PayPal');
+  const {
+    data: order,
+    refetch,
+    isLoading,
+    error,
+  } = useGetMyOrdersNotValidQuery();
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const submitHandler = (e) => {
+  if (!isLoading && order==null)
+    navigate('/shipping');
+
+  const [updatePaymentMethod, { isLoading: loadingUpdate }] = useUpdatePaymentMethodMutation();
+
+
+  const submitHandler = async (e) => {
     e.preventDefault();
-    dispatch(savePaymentMethod(paymentMethod));
-    navigate('/placeorder');
+    try {
+      console.log("paymentMethod: ", paymentMethod);
+      const res = await updatePaymentMethod({orderId: order._id, paymentMethod: paymentMethod}).unwrap();
+      while (loadingUpdate)
+      {
+      }
+      console.log(loadingUpdate);
+      navigate('/placeorder');}
+    catch (err) {
+      console.log(err);
+      toast.error(err);
+    }
   };
 
   return (
     <FormContainer>
       <CheckoutSteps step1 step2 step3 />
-      <h1>Payment Method</h1>
+      <h1>Phương thức thanh toán</h1>
       <Form onSubmit={submitHandler}>
         <Form.Group>
-          <Form.Label as='legend'>Select Method</Form.Label>
+          <Form.Label as='legend'>Lựa chọn phương thức thanh toán</Form.Label>
           <Col>
-            <Form.Check
-              className='my-2'
-              type='radio'
-              label='PayPal or Credit Card'
-              id='PayPal'
-              name='paymentMethod'
-              value='PayPal'
-              checked
-              onChange={(e) => setPaymentMethod(e.target.value)}
-            ></Form.Check>
+          <Form.Check
+            className='my-2'
+            type='radio'
+            label='Thanh toán khi nhận hàng'
+            id='cash'
+            name='paymentMethod'
+            value='Thanh toán khi nhận hàng'
+            checked={paymentMethod == 'Thanh toán khi nhận hàng'}
+            onChange={(e) => setPaymentMethod(e.target.value)}
+          ></Form.Check>
+          <Form.Check
+            className='my-2'
+            type='radio'
+            label='QR Code'
+            id='QR'
+            name='paymentMethod'
+            value='QR'
+            checked={paymentMethod == 'QR'}
+            onChange={(e) => setPaymentMethod(e.target.value)}
+          ></Form.Check>
+            
           </Col>
         </Form.Group>
 
         <Button type='submit' variant='primary'>
-          Continue
+          Tiếp tục
         </Button>
       </Form>
     </FormContainer>
