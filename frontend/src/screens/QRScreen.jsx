@@ -29,19 +29,19 @@ const QRScreen = () => {
   useEffect(() => {
     const fetchEmailData = async () => {
       console.log("in fetchEmailData");
-      // try {
-      //   const response = await getMail({ totalPrice: order?.totalPrice });
-      //   console.log(response);
-      //   if (response.data.status) {
-      //     const res = await placeOrder({ orderId: order._id, paymentMethod: "QR" });
-      //     console.log("res: ", res);
-      //     if (!loadingPlaceOrder)
-      //       navigate(`/order/${res.data._id}`);
-      //   }
-      // } catch (error) {
-      //   console.log(error);
-      //   toast.error(error.message || 'Error fetching email data');
-      // }
+      try {
+        const response = await getMail({ totalPrice: order?.totalPrice });
+        console.log(response);
+        if (response.data.status) {
+          const res = await placeOrder({ orderId: order._id, paymentMethod: "QR" });
+          console.log("res: ", res);
+          if (!loadingPlaceOrder)
+            navigate(`/order/${res.data._id}`);
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error(error.message || 'Error fetching email data');
+      }
     };
 
     if (order && order.totalPrice) {

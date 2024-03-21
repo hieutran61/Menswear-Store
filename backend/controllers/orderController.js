@@ -241,7 +241,7 @@ const placeOrder = asyncHandler(async (req, res) => {
 
   const cart = await Cart.findOne({ user: req.user._id });
   const order = await Order.findById(req.params.id);
-  if (order) {
+  if (order && order.isValid == false) {
     console.log("order: ", order);
     // Lặp qua các sản phẩm trong đơn hàng để giảm số lượng sản phẩm từng kích cỡ
     for (const orderItem of order.orderItems) {
@@ -297,7 +297,7 @@ const getMail = asyncHandler(async (req, res) => {
         clearTimeout(timeoutId);
         res.json({ status: true });
         res.end(); // Kết thúc kết nối HTTP sau khi gửi phản hồi
-      } else if (Date.now() - startTime >= 180000) { // Check for timeout (3min)
+      } else if (Date.now() - startTime >= 30000) { // Check for timeout (3min : 180000) (30s: 30000)
         clearTimeout(timeoutId);
         res.json({ status: false });
         res.end(); // Kết thúc kết nối HTTP sau khi gửi phản hồi
