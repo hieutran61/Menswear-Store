@@ -37,6 +37,7 @@ const ProductScreen = () => {
   const [addItemToCart] = useAddItemToCartMutation();
 
   const addToCartHandler = async () => {
+    console.log("add item to cart, quantity: ", qty);
     try {
       const res = await addItemToCart({
         product: product._id,
@@ -192,7 +193,7 @@ const ProductScreen = () => {
                     <Button
                       className='btn-block'
                       type='button'
-                      disabled={product.size.find((sizeOption) => sizeOption.sizeName === size)?.countInStock === 0}
+                      disabled={size && product.size.find((sizeOption) => sizeOption.sizeName === size)?.countInStock <= 0}
                       onClick={addToCartHandler}
                     >
                       Add To Cart

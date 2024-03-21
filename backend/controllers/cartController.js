@@ -165,13 +165,12 @@ const addItemToCart = asyncHandler(async (req, res, next) => {
     }
 
     let existItem = cart.cartItems.find(
-      (x) => x && x.product && x.product.toString() === product
+      (x) => x && x.product && x.product.toString() === product && x.size2 === size
     );
 
     if (existItem) {
       // Nếu sản phẩm đã tồn tại trong giỏ hàng, cập nhật `quantity` của sản phẩm
       existItem.quantity = quantity;
-      existItem.size2 = size;
     } else {
       // Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm mới sản phẩm vào giỏ hàng
       existItem = { product, quantity, itemPrice, size2: size };
@@ -201,9 +200,10 @@ const getAllItemsInCart = asyncHandler(async (req, res) => {
   }
 
   const itemsWithoutSize = cart.cartItems.map(item => {
-    const { product, quantity, itemPrice, size2 } = item;
+    const { _id: cartItemId, product, quantity, itemPrice, size2 } = item;
     const { _id, name, image, price, size } = product;
     return {
+      _id: cartItemId,
       product: { _id, name, image, price, size },
       quantity,
       itemPrice, 
@@ -222,6 +222,8 @@ const deleteItem = asyncHandler(async (req, res) => {
 
   const userId = req.user._id;
 
+  console.log("cartItem Id: ", itemId);
+
   // Find the cart of the user
   const cart = await Cart.findOne({ user: userId });
 
@@ -229,20 +231,15 @@ const deleteItem = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error('Cart not found');
   }
- 
-  console.log({ cartItems: cart.cartItems });
-  console.log({ itemId });
 
+  // Lọc ra cartItem cần xóa bằng cách so sánh id
+  const updatedCartItems = cart.cartItems.filter(item => item._id.toString() !== itemId);
 
-  // Filter out the item to be deleted
-  const updatedCartItems = (cart.cartItems || []).filter(item => item.product.toString() !== itemId);
+  // Cập nhật giỏ hàng với các cartItem đã lọc
+  cart.cartItems = updatedCartItems;
 
-  // Update the cart with the filtered items
-  const updatedCart = await Cart.findOneAndUpdate(
-    { user: userId },
-    { cartItems: updatedCartItems },
-    { new: true } // To get the updated document
-  );
+  // Lưu lại giỏ hàng đã cập nhật
+  const updatedCart = await cart.save();
 
   if (!updatedCart) {
     res.status(404);

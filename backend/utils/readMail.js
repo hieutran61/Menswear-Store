@@ -33,7 +33,7 @@ const readMail = async () => {
     const searchCriteria = ['UNSEEN', ['FROM', 'support@timo.vn'], ['SUBJECT', 'Thông báo thay đổi số dư tài khoản']];
 
     // Lấy danh sách email chưa đọc
-    const fetchOptions = { bodies: ['HEADER.FIELDS (FROM SUBJECT)', 'TEXT'], markSeen: true };
+    const fetchOptions = { bodies: ['HEADER.FIELDS (FROM SUBJECT)', 'TEXT'], markSeen: false };
     const messages = await connection.search(searchCriteria, fetchOptions);
 
     // Lấy email mới nhất (chỉ lấy một email)
