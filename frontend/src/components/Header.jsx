@@ -13,7 +13,6 @@ import { useGetCartsQuery } from '../slices/cartsApiSlice';
 const Header = () => {
   // const { cartItems } = useSelector((state) => state.cart);
   const { userInfo } = useSelector((state) => state.auth);
-  const { data: cartItems, isLoading, error, refetch } = useGetCartsQuery();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -23,7 +22,6 @@ const Header = () => {
     try {
       await logoutApiCall().unwrap();
       dispatch(logout());
-      dispatch(resetCart());
       navigate('/login');
     } catch (err) {
       console.error(err);
@@ -57,11 +55,6 @@ const Header = () => {
                 {/* Change color style to black */}
                 <Nav.Link style={{ color: '#000' }}>
                   <FaShoppingCart /> Cart
-                  {cartItems && cartItems.length > 0 && (
-                    <Badge pill bg='success' style={{ marginLeft: '5px' }}>
-                      ({cartItems && cartItems.reduce((acc, cartItems) => acc + cartItems.quantity, 0)})
-                    </Badge>
-                  )}
                 </Nav.Link>
               </LinkContainer>
               {userInfo ? (
