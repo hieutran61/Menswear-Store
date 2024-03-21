@@ -266,9 +266,11 @@ const placeOrder = asyncHandler(async (req, res) => {
     }
 
     order.isValid = true;
-    cart.cartItems = [];
-    await cart.save();
     const updatedOrder = await order.save();
+
+    cart.cartItems = [];
+    
+    await cart.save();
     res.json(updatedOrder);
   } else {
     res.status(404);

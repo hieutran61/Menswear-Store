@@ -35,8 +35,13 @@ const QRScreen = () => {
         if (response.data.status) {
           const res = await placeOrder({ orderId: order._id, paymentMethod: "QR" });
           console.log("res: ", res);
-          if (!loadingPlaceOrder)
+          if (!loadingPlaceOrder && res.data){
+            toast.success("Thanh toán thành công")
             navigate(`/order/${res.data._id}`);
+          }
+        }
+        else {
+          toast.error("Giao dịch hết thời gian! Vui lòng reload lại trang");
         }
       } catch (error) {
         console.log(error);
