@@ -29,6 +29,13 @@ export const orderApiSlice = apiSlice.injectEndpoints({
       }),
       keepUnusedDataFor: 5,
     }),
+    getMail: builder.mutation({
+      query: (data) => ({
+        url: `${ORDERS_URL}/qr`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
     getMyOrders: builder.query({
       query: () => ({
         url: `${ORDERS_URL}/mine`,
@@ -64,8 +71,10 @@ export const orderApiSlice = apiSlice.injectEndpoints({
       query: (data) => ({
         url: `${ORDERS_URL}/${data.orderId}`,
         method: 'PUT',
+        body: data
       }),
     }),
+    
   }),
 });
 
@@ -79,5 +88,6 @@ export const {
   useDeliverOrderMutation,
   useUpdatePaymentMethodMutation,
   useGetMyOrdersNotValidQuery,
-  usePlaceOrderMutation
+  usePlaceOrderMutation,
+  useGetMailMutation
 } = orderApiSlice;
