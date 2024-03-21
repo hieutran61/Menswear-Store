@@ -88,9 +88,16 @@ const OrderScreen = () => {
   };
 
   const payOrderHandler = async () => {
-    await payOrder(orderId);
-    refetch();
+    try {
+      const res = await payOrder(orderId);
+      refetch();
+      toast.success('Order is paid');
+    } catch (err) {
+      console.log("err", err);
+      toast.error(err?.data?.message || err.error);
+    }
   };
+
   return isLoading ? (
     <Loader />
   ) : error ? (
