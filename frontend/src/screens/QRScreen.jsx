@@ -34,7 +34,14 @@ const QRScreen = () => {
         console.log(response);
         if (response.data.status) {
           const res = await placeOrder({ orderId: order._id, paymentMethod: "QR" });
-          navigate(`/order/${res.data._id}`);
+          console.log("res: ", res);
+          if (!loadingPlaceOrder && res.data){
+            toast.success("Thanh toán thành công")
+            navigate(`/order/${res.data._id}`);
+          }
+        }
+        else {
+          toast.error("Giao dịch hết thời gian! Vui lòng reload lại trang");
         }
       } catch (error) {
         console.log(error);
@@ -44,6 +51,7 @@ const QRScreen = () => {
 
     if (order && order.totalPrice) {
       fetchEmailData();
+    console.log("fetchEmailData");
     }
   }, [getMail, order, navigate]);
 

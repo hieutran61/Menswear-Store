@@ -56,8 +56,9 @@ const CartScreen = () => {
   const deleteItemHandler = async (id) => {
     if (window.confirm('Are you sure')) {
       try {
-        await deleteItem(id);
+        const res = await deleteItem(id);
         refetch();
+        toast.success(res.data.message);
       } catch (err) {
         toast.error(err?.data?.message || err.error);
       }
@@ -67,9 +68,6 @@ const CartScreen = () => {
     navigate('/login?redirect=/shipping');
   };
 
-  // if (isLoading) {
-  //   return <p>Loading...</p>;
-  // }
 
   return (
     <>
@@ -90,7 +88,7 @@ const CartScreen = () => {
             ) : (
               <ListGroup variant='flush'>
                 {cartItems.map((item) => (
-                  <ListGroup.Item key={item.product._id}>
+                  <ListGroup.Item key={item._id}>
                     <Row>
                       <Col md={2}>
                         <Image src={item.product.image} alt={item.product.name} fluid rounded />
@@ -120,7 +118,7 @@ const CartScreen = () => {
                         <Button
                           type='button'
                           variant='light'
-                          onClick={() => deleteItemHandler(item.product._id)}
+                          onClick={() => deleteItemHandler(item._id)}
                         >
                           <FaTrash />
                         </Button>

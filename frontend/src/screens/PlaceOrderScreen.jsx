@@ -27,8 +27,6 @@ const PlaceOrderScreen = () => {
     }
   }, [order.paymentMethod, refetch]);
 
-  const dispatch = useDispatch();
-
   
   const placeOrderHandler = async () => {
     try {
