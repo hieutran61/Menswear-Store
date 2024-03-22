@@ -13,7 +13,7 @@ const PaymentScreen = () => {
   
   
   const [paymentMethod, setPaymentMethod] = useState('Thanh toán khi nhận hàng');
-  
+  const [isOrderLoaded, setIsOrderLoaded] = useState(false);  
 
   const {
     data: order,
@@ -25,8 +25,18 @@ const PaymentScreen = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  if (!isLoading && order==null)
-    navigate('/shipping');
+  useEffect(() => {
+    if (!isLoading && order == undefined) {
+      setIsOrderLoaded(true);
+    }
+  }, [isLoading, order]);
+
+  useEffect(() => {
+    if (isOrderLoaded && !order) {
+      navigate('/shipping');
+      toast.error('Vui lòng điền thông tin để đặt hàng')
+    }
+  }, [isOrderLoaded, order, navigate]);
 
   const [updatePaymentMethod, { isLoading: loadingUpdate }] = useUpdatePaymentMethodMutation();
 

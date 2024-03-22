@@ -25,6 +25,8 @@ import { useAddItemToCartMutation } from '../slices/cartsApiSlice';
 
 const ProductScreen = () => {
   const { id: productId } = useParams();
+  const { userInfo } = useSelector((state) => state.auth);
+
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -37,18 +39,23 @@ const ProductScreen = () => {
   const [addItemToCart] = useAddItemToCartMutation();
 
   const addToCartHandler = async () => {
-    console.log("add item to cart, quantity: ", qty);
-    try {
-      const res = await addItemToCart({
-        product: product._id,
-        quantity: qty,
-        size: size,
-        itemPrice: product.price * qty,
-      }).unwrap();
-      navigate('/cart');
-    } catch (err) {
-      console.log("err");
-      toast.error(err);
+    if (userInfo) {
+      console.log("add item to cart, quantity: ", qty);
+      try {
+        const res = await addItemToCart({
+          product: product._id,
+          quantity: qty,
+          size: size,
+          itemPrice: product.price * qty,
+        }).unwrap();
+        navigate('/cart');
+      } catch (err) {
+        console.log("err");
+        toast.error(err);
+      }
+    } else {
+      toast.error("Bạn phải đăng nhập trước");
+      navigate('/login');
     }
   };
 
@@ -58,8 +65,6 @@ const ProductScreen = () => {
     refetch,
     error,
   } = useGetProductDetailsQuery(productId);
-
-  const { userInfo } = useSelector((state) => state.auth);
 
   const [createReview, { isLoading: loadingProductReview }] =
     useCreateReviewMutation();
