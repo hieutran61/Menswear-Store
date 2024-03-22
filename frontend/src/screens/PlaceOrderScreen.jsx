@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Row, Col, ListGroup, Image, Card } from 'react-bootstrap';
@@ -18,14 +18,24 @@ const PlaceOrderScreen = () => {
     error,
   } = useGetMyOrdersNotValidQuery();
   const [placeOrder, { isLoading: loadingUpdate }] = usePlaceOrderMutation();
-
+  const [orderLoaded, setOrderLoaded] = useState(false);
 
   useEffect(() => {
-    if ( order.paymentMethod=="" || order.paymentMethod) {
+    if (isLoading === false && order == undefined) {
+      setOrderLoaded(true);
+    }
+    if (order && (order.paymentMethod === "" || order.paymentMethod)) {
       // Force a re-render
       refetch();
     }
-  }, [order.paymentMethod, refetch]);
+  }, [isLoading, order, refetch]);
+
+  useEffect(() => {
+    if (orderLoaded && !order) {
+      navigate(`/shipping`);
+      toast.error('Vui lòng điền thông tin để đặt hàng')
+    }
+  }, [orderLoaded, order, navigate]);
 
   
   const placeOrderHandler = async () => {
@@ -44,7 +54,7 @@ const PlaceOrderScreen = () => {
 
   return (
     <>
-      {isLoading ? (
+      {(order==undefined || isLoading) ? (
         <Loader />
       ) : error ? (
         <Message variant='danger'>
