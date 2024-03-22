@@ -276,11 +276,11 @@ const getMail = asyncHandler(async (req, res) => {
       console.log("read mail");
       amount = await readMail();
 
-      if (amount === 2000) {
+      if (amount === totalPrice) {
         clearTimeout(timeoutId);
         res.json({ status: true });
         res.end(); // Kết thúc kết nối HTTP sau khi gửi phản hồi
-      } else if (Date.now() - startTime >= 30000) { // Check for timeout (3min : 180000) (30s: 30000)
+      } else if (Date.now() - startTime >= 180000) { // Check for timeout (3min : 180000) (30s: 30000)
         clearTimeout(timeoutId);
         res.json({ status: false });
         res.end(); // Kết thúc kết nối HTTP sau khi gửi phản hồi
